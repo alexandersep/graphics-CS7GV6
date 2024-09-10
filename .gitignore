@@ -5,6 +5,5 @@ a.out
 *.ilk
 *.pdb
 labs/
-lib/
 .zig-cache
 zig-out/

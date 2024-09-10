@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include "graphics.h"
 
-GLFWwindow* graphics_create_window(int width, int height) {
-    if (glfwInit() == false) {
+GLFWwindow* cg_window_create(int width, int height, const char* title) {
+    if (glfwInit() == FALSE) {
         int error = glfwGetError(NULL);
         fprintf(stderr, "GLFW error: %d\n", error);
     }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    GLFWwindow* window = glfwCreateWindow(width, height, "Window", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(width, height, title, NULL, NULL);
     if (window == NULL) {
         fprintf(stderr, "Failed to intialise window\n");
         return NULL;
@@ -28,14 +28,6 @@ GLFWwindow* graphics_create_window(int width, int height) {
     }
 
     return window;
-}
-
-bool graphics_is_key_pressed(GLFWwindow* window, int key) {
-    int state = glfwGetKey(window, key);    
-    if (state == GLFW_PRESS) {
-        return true;
-    }
-    return false;
 }
 
 void error_callback(int error, const char* description) {

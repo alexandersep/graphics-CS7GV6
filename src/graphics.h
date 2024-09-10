@@ -11,27 +11,29 @@
 
 // Types
 typedef char bool;
-#ifndef true
-#define true 1
-#endif
-#ifndef false
-#define false 0
-#endif
+
+#define TRUE GL_TRUE
+#define FALSE GL_FALSE
+
 #define GREEN 0x0000FF
 #define BLUE 0x00FF00
 #define RED 0xFF0000
 
-// control.h
+// control
 // Window
-GLFWwindow* graphics_create_window(int width, int height);
-bool graphics_is_key_pressed(GLFWwindow* window, int key);
+GLFWwindow* cg_window_create(int width, int height, const char* title);
 
-// Callbacks
-// framebuffer for opengl
+// Callback
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-// Error
 void error_callback(int error, const char* description);
-// Keyboard
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+// Shader
+unsigned int cg_shader_create(const char* vertexPath, const char* fragmentPath);
+void cg_shader_destroy(unsigned int programId);
+
+// File
+// Returns int size, and first parameter src code
+size_t cg_read_file(char** shaderSrc, const char* shaderPath);
 
 #endif // GRAPHICS_H 

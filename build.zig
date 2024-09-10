@@ -3,6 +3,7 @@ const std = @import("std");
 pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
+    const t = target.result;
 
     const exe = b.addExecutable(.{
         .name = "graphics",
@@ -10,17 +11,25 @@ pub fn build(b: *std.Build) !void {
         .optimize = optimize,
     });
 
-    const lib_dir = "lib/";
-    const glfw_dir = lib_dir ++ "glfw-3.4/";
+    if (t.os.tag == std.Target.Os.Tag.windows) {
+        exe.linkSystemLibrary("opengl32");
+        exe.linkSystemLibrary("c");
+        exe.linkSystemLibrary("user32");
+        exe.linkSystemLibrary("gdi32");
+        exe.linkSystemLibrary("shell32");
 
-    exe.linkSystemLibrary("glfw3");
-    exe.linkSystemLibrary("GL");
-    exe.addLibraryPath(b.path(lib_dir));
+        exe.addLibraryPath(.{ .cwd_relative = "C:\\Program Files (x86)\\GLFW\\lib" });
+        exe.addIncludePath(.{ .cwd_relative = "C:\\Program Files (x86)\\GLFW\\include" });
+    } else { // linux
+        exe.linkSystemLibrary("GL");
+
+        exe.addLibraryPath(.{ .cwd_relative = "/home/alex/.local/lib" });
+        exe.addIncludePath(.{ .cwd_relative = "/home/alex/.local/include" });
+    }
+    exe.linkSystemLibrary2("glfw3", .{ .preferred_link_mode = .static });
     exe.addIncludePath(b.path("include"));
     exe.addCSourceFiles(.{ .files = &generic_source_files });
     exe.linkLibC();
-
-    exe.addIncludePath(b.path(glfw_dir ++ "include"));
 
     b.installArtifact(exe);
 
@@ -39,4 +48,6 @@ const generic_source_files = [_][]const u8{
     "src/gl.c",
     "src/main.c",
     "src/control.c",
+    "src/shader.c",
+    "src/file.c",
 };
