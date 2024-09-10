@@ -1,0 +1,10 @@
+# Ignore Uncessary files from Windows/Linux
+*.obj
+*.exe
+a.out
+*.ilk
+*.pdb
+labs/
+lib/
+.zig-cache
+zig-out/
