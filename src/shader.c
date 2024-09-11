@@ -68,6 +68,14 @@ unsigned int cg_shader_create(const char* vertexPath, const char* fragmentPath) 
     return programId;
 }
 
+void cg_shader_use(unsigned int programId) {
+    glUseProgram(programId);
+}
+
+void cg_shader_uniform1i(unsigned int programId, const char* programName, int samplerId) {
+    glUniform1i(glGetUniformLocation(programId, programName), samplerId);
+}
+
 void cg_shader_destroy(unsigned int programId) {
     glDeleteProgram(programId);
 }

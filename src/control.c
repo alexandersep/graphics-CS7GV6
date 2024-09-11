@@ -45,11 +45,13 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             break;
         case GLFW_KEY_A:
             if (action == GLFW_PRESS) {
+                glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
                 printf("KEY A\n");
             }
             break;
         case GLFW_KEY_B:
             if (action == GLFW_PRESS) {
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
                 printf("KEY B\n");
             }
             break;

@@ -27,6 +27,7 @@ pub fn build(b: *std.Build) !void {
         exe.addIncludePath(.{ .cwd_relative = "/home/alex/.local/include" });
     }
     exe.linkSystemLibrary2("glfw3", .{ .preferred_link_mode = .static });
+    exe.linkSystemLibrary2("cglm", .{ .preferred_link_mode = .static });
     exe.addIncludePath(b.path("include"));
     exe.addCSourceFiles(.{ .files = &generic_source_files });
     exe.linkLibC();
@@ -50,4 +51,5 @@ const generic_source_files = [_][]const u8{
     "src/control.c",
     "src/shader.c",
     "src/file.c",
+    "src/texture.c",
 };
