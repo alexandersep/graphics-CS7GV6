@@ -34,4 +34,5 @@ Module CS7GV6 - Comptuer Graphics
 * For glfw: doxygen 1.11.0
 * Ubuntu: xorg-dev
 * zig: v0.13
-* cmake: v3.11
+* cmake: ~v3.10 
+* assimp: v5.4.3
