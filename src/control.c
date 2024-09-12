@@ -9,7 +9,7 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    Camera* camera = (Camera*)glfwGetWindowUserPointer(window);
+    Camera* camera = glfwGetWindowUserPointer(window);
     camera->zoom -= yoffset;
     if (camera->zoom < 1.0f) {
         camera->zoom = 1.0f;
@@ -19,51 +19,28 @@ static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) 
     }
 }
 
-float deltaTime = 0.0f;
-float lastFrame = 0.0f;
-
-float cg_control_time_get_delta() {
-    return deltaTime;
-}
-
-float cg_control_time_get_last_frame() {
-    return lastFrame;
-}
-
-void cg_control_time_set_delta(float dt) {
-    deltaTime = dt;
-}
-
-void cg_control_time_set_last_frame(float lf) {
-    lastFrame = lf;
-}
-
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    Camera* camera = (Camera*)glfwGetWindowUserPointer(window);
+void cg_control_camera_move(GLFWwindow* window, float deltaTime) {
+    Camera* camera = glfwGetWindowUserPointer(window);
 
     float velocity = camera->speed * deltaTime;
-    switch(key) {
-        case CG_CLOSE: {
-            glfwSetWindowShouldClose(window, GLFW_TRUE);
-        } break;
-        case CG_FORWARD: {
-            glm_vec3_muladds(camera->front, velocity, camera->pos);
-        } break;
-        case CG_BACKWARD: {
-            glm_vec3_muladds(camera->front, -velocity, camera->pos);
-        } break;
-        case CG_LEFT: {
-            vec3 cross;
-            glm_vec3_cross(camera->front, camera->up, cross);
-            glm_vec3_normalize(cross);
-            glm_vec3_muladds(cross, -velocity, camera->pos);
-        } break;
-        case CG_RIGHT: {
-            vec3 cross;
-            glm_vec3_cross(camera->front, camera->up, cross);
-            glm_vec3_normalize(cross);
-            glm_vec3_muladds(cross, velocity, camera->pos);
-        } break;
+    // Check if each movement key is pressed
+    if (glfwGetKey(window, CG_FORWARD) == GLFW_PRESS) {
+        glm_vec3_muladds(camera->front, velocity, camera->pos);
+    }
+    if (glfwGetKey(window, CG_BACKWARD) == GLFW_PRESS) {
+        glm_vec3_muladds(camera->front, -velocity, camera->pos);
+    }
+    if (glfwGetKey(window, CG_LEFT) == GLFW_PRESS) {
+        vec3 cross;
+        glm_vec3_cross(camera->front, camera->up, cross);
+        glm_vec3_normalize(cross);
+        glm_vec3_muladds(cross, -velocity, camera->pos);
+    }
+    if (glfwGetKey(window, CG_RIGHT) == GLFW_PRESS) {
+        vec3 cross;
+        glm_vec3_cross(camera->front, camera->up, cross);
+        glm_vec3_normalize(cross);
+        glm_vec3_muladds(cross, velocity, camera->pos);
     }
 }
 
@@ -81,10 +58,23 @@ static void cg_control_camera_update(Camera* camera) {
     glm_normalize(camera->up);
 }
 
-static void mouse_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    Camera* camera = (Camera*)glfwGetWindowUserPointer(window);
-    xoffset *= camera->sensitivity;
-    yoffset *= camera->sensitivity;
+static void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
+    Camera* camera = glfwGetWindowUserPointer(window);
+    float xpos = xposIn;
+    float ypos = yposIn;
+    if (!camera->mouse.focus) {
+        camera->mouse.xpos = xpos;
+        camera->mouse.ypos = ypos;
+        camera->mouse.focus = 1;
+    }
+
+    float xoffset = xpos - camera->mouse.xpos;
+    float yoffset = camera->mouse.ypos - ypos;
+    camera->mouse.xpos = xpos;
+    camera->mouse.ypos = ypos;
+
+    xoffset *= camera->mouse.sensitivity;
+    yoffset *= camera->mouse.sensitivity;
 
     camera->angle.yaw += xoffset;
     camera->angle.pitch += yoffset;
@@ -116,7 +106,6 @@ GLFWwindow* cg_control_window_create(Camera* camera, int width, int height, cons
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetErrorCallback(error_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetKeyCallback(window, key_callback);
     glfwSetScrollCallback(window, scroll_callback);
     glfwSetWindowUserPointer(window, camera);
 
@@ -143,5 +132,9 @@ void cg_control_camera_create(Camera* camera, float speed) {
     camera->zoom = 45.0f;
     camera->angle.pitch = 0.0f;
     camera->angle.yaw = -90.0f;
+    camera->mouse.xpos = CG_SCREEN_X / 2.0;
+    camera->mouse.ypos = CG_SCREEN_Y / 2.0;
+    camera->mouse.focus = 0;
+    camera->mouse.sensitivity = 0.1f;
     cg_control_camera_update(camera);
 }

@@ -62,7 +62,7 @@ vec3 cubePositions[] = {
 
 int main() {
     Camera camera;
-    cg_control_camera_create(&camera, 2.5f);
+    cg_control_camera_create(&camera, 10.0f);
     GLFWwindow* window = cg_control_window_create(&camera, CG_SCREEN_X, CG_SCREEN_Y, "Window");
     if (window == NULL) {
         fprintf(stderr, "Failed to open a window\n");
@@ -106,11 +106,13 @@ int main() {
     cg_shader_uniform1i(shaderId, "texture2", 1);
 
     unsigned int transformLoc = glGetUniformLocation(shaderId, "transform");
+    float deltaTime = 0.0f;
+    float lastFrame = 0.0f;
     while (!glfwWindowShouldClose(window)) {
         float currentFrame = glfwGetTime();
-        float deltaTime = currentFrame - cg_control_time_get_last_frame();
-        cg_control_time_set_last_frame(currentFrame);
-        cg_control_time_set_delta(deltaTime);
+        float deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+        cg_control_camera_move(window, deltaTime);
 
         glClearColor(0.14f, 0.14f, 0.14f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -121,7 +123,7 @@ int main() {
         glm_vec3_add(camera.pos, camera.front, center);
         glm_lookat(camera.pos, center, camera.up, view);
         mat4 projection = GLM_MAT4_IDENTITY;
-        glm_perspective(glm_rad(45.0f), (float) CG_SCREEN_X / (float) CG_SCREEN_Y, 0.1f, 100.0f, projection);
+        glm_perspective(glm_rad(camera.zoom), (float) CG_SCREEN_X / (float) CG_SCREEN_Y, 0.1f, 100.0f, projection);
 
         int modelLoc = glGetUniformLocation(shaderId, "model");
         int viewLoc = glGetUniformLocation(shaderId, "view");

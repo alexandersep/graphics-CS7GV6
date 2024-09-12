@@ -32,12 +32,19 @@ typedef struct {
     float roll;
 } EulerAngle;
 
+typedef struct {
+    float xpos;
+    float ypos;
+    float sensitivity;
+    bool focus;
+} Mouse;
+
 // Camera
 typedef struct {
     float speed;
     float zoom;
-    float sensitivity;
     EulerAngle angle;
+    Mouse mouse;
     vec3 pos;
     vec3 front;
     vec3 up;
@@ -48,10 +55,7 @@ typedef struct {
 // control
 GLFWwindow* cg_control_window_create(Camera* camera, int width, int height, const char* title);
 void cg_control_camera_create(Camera* camera, float speed);
-float cg_control_time_get_delta();
-float cg_control_time_get_last_frame();
-void cg_control_time_set_delta(float dt);
-void cg_control_time_set_last_frame(float lf);
+void cg_control_camera_move(GLFWwindow* window, float deltaTime);
 
 // Shader
 unsigned int cg_shader_create(const char* vertexPath, const char* fragmentPath);
