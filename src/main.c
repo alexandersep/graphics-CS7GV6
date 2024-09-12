@@ -61,7 +61,9 @@ vec3 cubePositions[] = {
 };
 
 int main() {
-    GLFWwindow* window = cg_window_create(CG_SCREEN_X, CG_SCREEN_Y, "Window");
+    Camera camera;
+    cg_control_camera_create(&camera, 2.5f);
+    GLFWwindow* window = cg_control_window_create(&camera, CG_SCREEN_X, CG_SCREEN_Y, "Window");
     if (window == NULL) {
         fprintf(stderr, "Failed to open a window\n");
         glfwTerminate();
@@ -88,7 +90,7 @@ int main() {
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-    glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
     stbi_set_flip_vertically_on_load(TRUE);
 
@@ -105,14 +107,21 @@ int main() {
 
     unsigned int transformLoc = glGetUniformLocation(shaderId, "transform");
     while (!glfwWindowShouldClose(window)) {
-        //glClearColor((float) RED / 255, (float) GREEN / 255, (float) BLUE / 255, (float) 1.0f);
+        float currentFrame = glfwGetTime();
+        float deltaTime = currentFrame - cg_control_time_get_last_frame();
+        cg_control_time_set_last_frame(currentFrame);
+        cg_control_time_set_delta(deltaTime);
+
         glClearColor(0.14f, 0.14f, 0.14f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        mat4 view = GLM_MAT4_IDENTITY;
+        const float radius = 10.0f;
+        mat4 view;
+        vec3 center;
+        glm_vec3_add(camera.pos, camera.front, center);
+        glm_lookat(camera.pos, center, camera.up, view);
         mat4 projection = GLM_MAT4_IDENTITY;
-        glm_translate_make(view, (vec3) {0.0f, 0.0f, -3.0f});
-        glm_perspective(glm_rad(45.0f), (float)CG_SCREEN_X / (float) CG_SCREEN_Y, 0.1f, 100.0f, projection);
+        glm_perspective(glm_rad(45.0f), (float) CG_SCREEN_X / (float) CG_SCREEN_Y, 0.1f, 100.0f, projection);
 
         int modelLoc = glGetUniformLocation(shaderId, "model");
         int viewLoc = glGetUniformLocation(shaderId, "view");
