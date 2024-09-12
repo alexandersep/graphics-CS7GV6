@@ -5,6 +5,7 @@
  */
 #include "graphics.h"
 
+#include <assimp/cimport.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -89,16 +90,30 @@ static int read_file(FILE *in, char **dataptr, size_t *sizeptr) {
     return READALL_OK;
 }
 
-size_t cg_read_file(char** shaderSrc, const char* shaderPath) {
+size_t cg_file_read(char** src, const char* srcPath) {
     FILE* fp = NULL;
-    fp = fopen(shaderPath,"r"); 
+    fp = fopen(srcPath,"r");
     if (fp == NULL) {
-        fprintf(stderr, "Error reading in file: %s\n", shaderPath);
+        fprintf(stderr, "Error reading in file: %s\n", srcPath);
     }
 
     size_t size;
-    read_file(fp, shaderSrc, &size);
+    read_file(fp, src, &size);
     fclose(fp);
 
     return size;
+}
+
+// TODO: unused, make model loading function
+int cg_file_load_scene(const char* filePath) {
+   const struct aiScene* pScene = aiImportFile(filePath,
+        aiProcess_GenSmoothNormals |
+        aiProcess_CalcTangentSpace |
+        aiProcess_Triangulate);
+   if (!pScene) {
+       fprintf(stderr, "Failed to open file using assimp: %s\n", aiGetErrorString());
+       return false;
+   }
+   aiReleaseImport(pScene);
+   return true;
 }

@@ -53,8 +53,8 @@ static void cg_program_link(unsigned int programId, int vertexShaderId, int frag
 unsigned int cg_shader_create(const char* vertexPath, const char* fragmentPath) {
     char* vertexShaderSrc;
     char* fragmentShaderSrc;
-    cg_read_file(&vertexShaderSrc, vertexPath);
-    cg_read_file(&fragmentShaderSrc, fragmentPath);
+    cg_file_read(&vertexShaderSrc, vertexPath);
+    cg_file_read(&fragmentShaderSrc, fragmentPath);
 
     unsigned int vertexShader = cg_shaderid_create(GL_VERTEX_SHADER);
     cg_shader_compile(vertexShader, vertexShaderSrc);
@@ -72,8 +72,14 @@ void cg_shader_use(unsigned int programId) {
     glUseProgram(programId);
 }
 
-void cg_shader_uniform1i(unsigned int programId, const char* programName, int samplerId) {
-    glUniform1i(glGetUniformLocation(programId, programName), samplerId);
+void cg_shader_uniform1i(unsigned int programId, const char* name, int samplerId) {
+    glUniform1i(glGetUniformLocation(programId, name), samplerId);
+}
+void cg_shader_uniform_matrix4fv(unsigned int programId, const char* name, mat4* projection) {
+    glUniformMatrix4fv(glGetUniformLocation(programId, name), 1, GL_FALSE, projection[0][0]);
+}
+void cg_shader_uniform3f(unsigned int programId, const char* name, float x, float y, float z) {
+    glUniform3f(glGetUniformLocation(programId, name), x, y, z);
 }
 
 void cg_shader_destroy(unsigned int programId) {

@@ -42,6 +42,15 @@ void cg_texture_load(const char* texturePath) {
     stbi_image_free(data);
 }
 
-void cg_texture_use(unsigned int textureId) {
-    glBindTexture(GL_TEXTURE_2D, textureId);
+void cg_texture_bind(unsigned int* textureId, unsigned int index) {
+    glBindTexture(GL_TEXTURE_2D, textureId[index]);
+}
+
+void cg_texture_use(unsigned int* textureId, unsigned int index) {
+    int texture = GL_TEXTURE0 + index;
+    if (index > 30) {
+        fprintf(stderr, "Error exceeding allowable textures, Number of textures is %d", index + 1);
+    }
+    glActiveTexture(texture);
+    cg_texture_bind(textureId, index);
 }

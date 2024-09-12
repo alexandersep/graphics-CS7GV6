@@ -23,24 +23,33 @@ void cg_control_camera_move(GLFWwindow* window, float deltaTime) {
     Camera* camera = glfwGetWindowUserPointer(window);
 
     float velocity = camera->speed * deltaTime;
+    if (glfwGetKey(window, CLOSE1) || glfwGetKey(window, CLOSE2) == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, TRUE);
+    }
     // Check if each movement key is pressed
-    if (glfwGetKey(window, CG_FORWARD) == GLFW_PRESS) {
+    if (glfwGetKey(window, FORWARD) == GLFW_PRESS) {
         glm_vec3_muladds(camera->front, velocity, camera->pos);
     }
-    if (glfwGetKey(window, CG_BACKWARD) == GLFW_PRESS) {
+    if (glfwGetKey(window, BACKWARD) == GLFW_PRESS) {
         glm_vec3_muladds(camera->front, -velocity, camera->pos);
     }
-    if (glfwGetKey(window, CG_LEFT) == GLFW_PRESS) {
+    if (glfwGetKey(window, LEFT) == GLFW_PRESS) {
         vec3 cross;
         glm_vec3_cross(camera->front, camera->up, cross);
         glm_vec3_normalize(cross);
         glm_vec3_muladds(cross, -velocity, camera->pos);
     }
-    if (glfwGetKey(window, CG_RIGHT) == GLFW_PRESS) {
+    if (glfwGetKey(window, RIGHT) == GLFW_PRESS) {
         vec3 cross;
         glm_vec3_cross(camera->front, camera->up, cross);
         glm_vec3_normalize(cross);
         glm_vec3_muladds(cross, velocity, camera->pos);
+    }
+    if (glfwGetKey(window, UP) == GLFW_PRESS) {
+        glm_vec3_muladds(camera->worldup, velocity, camera->pos);
+    }
+    if (glfwGetKey(window, DOWN) == GLFW_PRESS) {
+        glm_vec3_muladds(camera->worldup, -velocity, camera->pos);
     }
 }
 

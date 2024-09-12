@@ -1,5 +1,6 @@
 #include "graphics.h"
 
+#include <cglm/affine.h>
 #include <stdio.h>
 
 float vertices[] = {
@@ -70,42 +71,52 @@ int main() {
         return 1;
     }
 
-    glEnable(GL_DEPTH_TEST);
     unsigned int shaderId =
         cg_shader_create("res/shaders/vertex/vs-texture.glsl", "res/shaders/fragment/fs-texture.glsl");
 
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    unsigned int shaderLight =
+        cg_shader_create("res/shaders/vertex/vs-light.glsl", "res/shaders/fragment/fs-light.glsl");
+    //cg_file_load_scene("res/models/cube/cube.obj");
+
+    unsigned int VAO[2];
+    glGenVertexArrays(2, VAO);
 
     unsigned int VBO;
     glGenBuffers(1, &VBO);
+
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glBindVertexArray(VAO[0]);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+    glBindVertexArray(VAO[1]);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glEnable(GL_DEPTH_TEST);
     //glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
     stbi_set_flip_vertically_on_load(TRUE);
 
     unsigned int textureId[2];
     cg_texture_create(textureId, 2);
-    cg_texture_use(textureId[0]);
+    cg_texture_bind(textureId, 0);
     cg_texture_load("res/images/wall.jpg");
-    cg_texture_use(textureId[1]);
+    cg_texture_bind(textureId, 1);
     cg_texture_load("res/images/awesomeface.png");
 
     cg_shader_use(shaderId);
     cg_shader_uniform1i(shaderId, "texture1", 0);
     cg_shader_uniform1i(shaderId, "texture2", 1);
 
-    unsigned int transformLoc = glGetUniformLocation(shaderId, "transform");
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
     while (!glfwWindowShouldClose(window)) {
@@ -117,7 +128,6 @@ int main() {
         glClearColor(0.14f, 0.14f, 0.14f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        const float radius = 10.0f;
         mat4 view;
         vec3 center;
         glm_vec3_add(camera.pos, camera.front, center);
@@ -125,38 +135,52 @@ int main() {
         mat4 projection = GLM_MAT4_IDENTITY;
         glm_perspective(glm_rad(camera.zoom), (float) CG_SCREEN_X / (float) CG_SCREEN_Y, 0.1f, 100.0f, projection);
 
-        int modelLoc = glGetUniformLocation(shaderId, "model");
-        int viewLoc = glGetUniformLocation(shaderId, "view");
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-        glUniformMatrix4fv(glGetUniformLocation(shaderId, "projection"), 1, GL_FALSE, &projection[0][0]);
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, textureId[0]);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, textureId[1]);
-
-        glUseProgram(shaderId);
-
-        glBindVertexArray(VAO);
-        for(unsigned int i = 0; i < 10; i++)
         {
+            cg_shader_use(shaderId);
+            cg_shader_uniform_matrix4fv(shaderId, "view", &view);
+            cg_shader_uniform_matrix4fv(shaderId, "projection", &projection);
+
+            cg_texture_use(textureId, 0);
+            cg_texture_use(textureId, 1);
+
+            glBindVertexArray(VAO[0]);
+            for(unsigned int i = 0; i < 10; i++)
+            {
+                mat4 model = GLM_MAT4_IDENTITY;
+                glm_translate_make(model, cubePositions[i]);
+                float angle = 20.0f * i;
+                glm_rotate(model, glm_rad(angle), (vec3) {1.0f, 0.3f, 0.5f});
+                glm_rotate(model, (float)glfwGetTime(), (vec3) {0.5f, 1.0f, 0.0f});
+                cg_shader_uniform_matrix4fv(shaderId, "model", &model);
+
+                glDrawArrays(GL_TRIANGLES, 0, 36);
+            }
+        }
+        {
+            cg_shader_use(shaderLight);
+
+            cg_shader_uniform_matrix4fv(shaderLight, "view", &view);
+            cg_shader_uniform_matrix4fv(shaderLight, "projection", &projection);
+            cg_shader_uniform3f(shaderLight, "objectColor", 1.0f, 0.5f, 0.31f);
+            cg_shader_uniform3f(shaderLight, "lightColor", 1.0f, 1.0f, 1.0f);
+
+            glBindVertexArray(VAO[1]);
+            vec3 lightPos = {1.2f, 1.0f, 2.0f};
             mat4 model = GLM_MAT4_IDENTITY;
-            glm_translate_make(model, cubePositions[i]);
-            float angle = 20.0f * i;
-            glm_rotate(model, glm_rad(angle), (vec3) {1.0f, 0.3f, 0.5f});
-            glm_rotate(model, (float)glfwGetTime(), (vec3) {0.5f, 1.0f, 0.0f});
-            glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (float *) model);
+            glm_translate_make(model, lightPos);
+            glm_scale(model, (vec3) {0.2f, 0.2f, 0.2f});
+            cg_shader_uniform_matrix4fv(shaderLight, "model", &model);
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
-        //glBindVertexArray(0); // no need to unbind it every time
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-    glDeleteVertexArrays(1, &VAO);
+    glDeleteVertexArrays(2, VAO);
     glDeleteBuffers(1, &VBO);
     cg_shader_destroy(shaderId);
+    cg_shader_destroy(shaderLight);
     glfwTerminate();
     return 0;
 }

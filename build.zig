@@ -28,6 +28,7 @@ pub fn build(b: *std.Build) !void {
     }
     exe.linkSystemLibrary2("glfw3", .{ .preferred_link_mode = .static });
     exe.linkSystemLibrary2("cglm", .{ .preferred_link_mode = .static });
+    exe.linkSystemLibrary("assimp"); // dynamic build
     exe.addIncludePath(b.path("include"));
     exe.addCSourceFiles(.{ .files = &generic_source_files });
     exe.linkLibC();
@@ -45,7 +46,7 @@ pub fn build(b: *std.Build) !void {
 }
 
 const generic_source_files = [_][]const u8{
-    "src/stb_image.c",
+    "src/single_headers.c",
     "src/gl.c",
     "src/main.c",
     "src/control.c",
