@@ -74,7 +74,11 @@ void cg_control_camera_move(GLFWwindow* window, float deltaTime);
 // Shader
 unsigned int cg_shader_create(const char* vertexPath, const char* fragmentPath);
 void cg_shader_use(unsigned int programId);
-void cg_shader_uniform1i(unsigned int programId, const char* programName, int samplerId);
+void cg_shader_uniform1i(unsigned int programId, const char* name, int x);
+void cg_shader_uniform2i(unsigned int programId, const char* name, int x, int y);
+void cg_shader_uniform3i(unsigned int programId, const char* name, int x, int y, int z);
+void cg_shader_uniform1f(unsigned int programId, const char* name, float x);
+void cg_shader_uniform2f(unsigned int programId, const char* name, float x, float y);
 void cg_shader_uniform3f(unsigned int programId, const char* name, float x, float y, float z);
 void cg_shader_uniform_matrix4fv(unsigned int programId, const char* name, mat4* projection);
 void cg_shader_destroy(unsigned int programId);

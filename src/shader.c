@@ -72,15 +72,26 @@ void cg_shader_use(unsigned int programId) {
     glUseProgram(programId);
 }
 
-void cg_shader_uniform1i(unsigned int programId, const char* name, int samplerId) {
-    glUniform1i(glGetUniformLocation(programId, name), samplerId);
+void cg_shader_uniform1i(unsigned int programId, const char* name, int x) {
+    glUniform1i(glGetUniformLocation(programId, name), x);
 }
+
 void cg_shader_uniform_matrix4fv(unsigned int programId, const char* name, mat4* projection) {
     glUniformMatrix4fv(glGetUniformLocation(programId, name), 1, GL_FALSE, projection[0][0]);
 }
+
+void cg_shader_uniform1f(unsigned int programId, const char* name, float x) {
+    glUniform1f(glGetUniformLocation(programId, name), x);
+}
+
+void cg_shader_uniform2f(unsigned int programId, const char* name, float x, float y) {
+    glUniform2f(glGetUniformLocation(programId, name), x, y);
+}
+
 void cg_shader_uniform3f(unsigned int programId, const char* name, float x, float y, float z) {
     glUniform3f(glGetUniformLocation(programId, name), x, y, z);
 }
+
 
 void cg_shader_destroy(unsigned int programId) {
     glDeleteProgram(programId);

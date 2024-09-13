@@ -1,51 +1,50 @@
 #include "graphics.h"
 
-#include <cglm/affine.h>
 #include <stdio.h>
 
 float vertices[] = {
-    // xyz               // texture
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+    // xyz                // texture   // normal
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,  0.0f,  0.0f, -1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,  0.0f,  0.0f, -1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  0.0f,  0.0f, -1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  0.0f, 0.0f, -1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f,  0.0f, -1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,  0.0f,  0.0f, -1.0f,
 
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  0.0f, 0.0f,  1.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f, 0.0f,  1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,  0.0f, 0.0f,  1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,  0.0f, 0.0f,  1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,  0.0f, 0.0f,  1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  0.0f, 0.0f,  1.0f,
 
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  -1.0f, 0.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  -1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  -1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  -1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  -1.0f, 0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  -1.0f, 0.0f, 0.0f,
 
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  1.0f, 0.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  1.0f, 0.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  1.0f, 0.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  1.0f, 0.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  1.0f, 0.0f, 0.0f,
 
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  0.0f, -1.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,  0.0f, -1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f, -1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f, -1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  0.0f, -1.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  0.0f, -1.0f, 0.0f,
 
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
 };
 
 vec3 cubePositions[] = {
@@ -89,16 +88,18 @@ int main() {
 
     glBindVertexArray(VAO[0]);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
     glBindVertexArray(VAO[1]);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     glEnable(GL_DEPTH_TEST);
@@ -139,6 +140,32 @@ int main() {
             cg_shader_use(shaderId);
             cg_shader_uniform_matrix4fv(shaderId, "view", &view);
             cg_shader_uniform_matrix4fv(shaderId, "projection", &projection);
+            cg_shader_uniform3f(shaderId, "objectColor", 1.0f, 0.5f, 0.31f);
+            cg_shader_uniform3f(shaderId, "lightColor", 1.0f, 1.0f, 1.0f);
+            vec3 lightPos = {1.2f, 1.0f, 2.0f};
+            cg_shader_uniform3f(shaderId, "viewPos", camera.pos[0], camera.pos[1], camera.pos[2]);
+
+            cg_shader_uniform3f(shaderId, "material.ambient", 1.0f, 0.5f, 0.31f);
+            cg_shader_uniform3f(shaderId, "material.diffuse", 1.0f, 0.5f, 0.31f);
+            cg_shader_uniform3f(shaderId, "material.specular", 0.5f, 0.5f, 0.5f);
+            cg_shader_uniform1f(shaderId, "material.shininess", 32.0f);
+
+            cg_shader_uniform3f(shaderId, "light.specular", 1.0f, 1.0f, 1.0f);
+
+            float time = glfwGetTime();
+
+            vec3 lightColor;
+            lightColor[0] = sin(time * 2.0f);
+            lightColor[1] = sin(time * 0.7f);
+            lightColor[2] = sin(time * 1.3f);
+
+            vec3 diffuseColor;
+            glm_vec3_mul(lightColor, (vec3) {0.5f, 0.5f, 0.5f}, diffuseColor);
+            vec3 ambientColor;
+            glm_vec3_mul(diffuseColor, (vec3) {0.2f, 0.2f, 0.2f}, ambientColor);
+
+            cg_shader_uniform3f(shaderId, "light.ambient", ambientColor[0], ambientColor[1], ambientColor[2]);
+            cg_shader_uniform3f(shaderId, "light.diffuse", diffuseColor[0], diffuseColor[1], diffuseColor[2]);
 
             cg_texture_use(textureId, 0);
             cg_texture_use(textureId, 1);
@@ -149,8 +176,8 @@ int main() {
                 mat4 model = GLM_MAT4_IDENTITY;
                 glm_translate_make(model, cubePositions[i]);
                 float angle = 20.0f * i;
-                glm_rotate(model, glm_rad(angle), (vec3) {1.0f, 0.3f, 0.5f});
-                glm_rotate(model, (float)glfwGetTime(), (vec3) {0.5f, 1.0f, 0.0f});
+                //glm_rotate(model, glm_rad(angle), (vec3) {1.0f, 0.3f, 0.5f});
+                //glm_rotate(model, (float)glfwGetTime(), (vec3) {0.5f, 1.0f, 0.0f});
                 cg_shader_uniform_matrix4fv(shaderId, "model", &model);
 
                 glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -161,8 +188,6 @@ int main() {
 
             cg_shader_uniform_matrix4fv(shaderLight, "view", &view);
             cg_shader_uniform_matrix4fv(shaderLight, "projection", &projection);
-            cg_shader_uniform3f(shaderLight, "objectColor", 1.0f, 0.5f, 0.31f);
-            cg_shader_uniform3f(shaderLight, "lightColor", 1.0f, 1.0f, 1.0f);
 
             glBindVertexArray(VAO[1]);
             vec3 lightPos = {1.2f, 1.0f, 2.0f};
