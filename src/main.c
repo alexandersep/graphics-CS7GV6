@@ -3,48 +3,48 @@
 #include <stdio.h>
 
 float vertices[] = {
-    // xyz                // texture   // normal
+    // xyz, texture, normal
     -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,  0.0f,  0.0f, -1.0f,
      0.5f, -0.5f, -0.5f,  1.0f, 0.0f,  0.0f,  0.0f, -1.0f,
      0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  0.0f,  0.0f, -1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  0.0f, 0.0f, -1.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  0.0f,  0.0f, -1.0f,
     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f,  0.0f, -1.0f,
     -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,  0.0f,  0.0f, -1.0f,
 
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  0.0f, 0.0f,  1.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f, 0.0f,  1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,  0.0f, 0.0f,  1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,  0.0f, 0.0f,  1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,  0.0f, 0.0f,  1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  0.0f, 0.0f,  1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  0.0f,  0.0f,  1.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f,  0.0f,  1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,  0.0f,  0.0f,  1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,  0.0f,  0.0f,  1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,  0.0f,  0.0f,  1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  0.0f,  0.0f,  1.0f,
 
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  -1.0f, 0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  -1.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  -1.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  -1.0f, 0.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  -1.0f, 0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  -1.0f, 0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, -1.0f,  0.0f,  0.0f,
 
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  1.0f, 0.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  1.0f, 0.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  1.0f, 0.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  1.0f, 0.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  1.0f, 0.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  1.0f,  0.0f,  0.0f,
 
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  0.0f, -1.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,  0.0f, -1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f, -1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f, -1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  0.0f, -1.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  0.0f, -1.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  0.0f, -1.0f,  0.0f,
 
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  0.0f, 1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f,  1.0f,  0.0f
 };
 
 vec3 cubePositions[] = {
@@ -133,31 +133,23 @@ int main() {
         vec3 center;
         glm_vec3_add(camera.pos, camera.front, center);
         glm_lookat(camera.pos, center, camera.up, view);
-        mat4 projection = GLM_MAT4_IDENTITY;
+        mat4 projection;
         glm_perspective(glm_rad(camera.zoom), (float) CG_SCREEN_X / (float) CG_SCREEN_Y, 0.1f, 100.0f, projection);
 
+        vec3 lightPos = {1.2f, 1.0f, 2.0f};
         {
             cg_shader_use(shaderId);
+            cg_shader_uniform3f(shaderId, "light.position", lightPos[0], lightPos[1], lightPos[2]);
+            cg_shader_uniform3f(shaderId, "viewPos", camera.pos[0], camera.pos[1], camera.pos[2]);
+
             cg_shader_uniform_matrix4fv(shaderId, "view", &view);
             cg_shader_uniform_matrix4fv(shaderId, "projection", &projection);
             cg_shader_uniform3f(shaderId, "objectColor", 1.0f, 0.5f, 0.31f);
-            cg_shader_uniform3f(shaderId, "lightColor", 1.0f, 1.0f, 1.0f);
-            vec3 lightPos = {1.2f, 1.0f, 2.0f};
-            cg_shader_uniform3f(shaderId, "viewPos", camera.pos[0], camera.pos[1], camera.pos[2]);
-
-            cg_shader_uniform3f(shaderId, "material.ambient", 1.0f, 0.5f, 0.31f);
-            cg_shader_uniform3f(shaderId, "material.diffuse", 1.0f, 0.5f, 0.31f);
-            cg_shader_uniform3f(shaderId, "material.specular", 0.5f, 0.5f, 0.5f);
-            cg_shader_uniform1f(shaderId, "material.shininess", 32.0f);
-
-            cg_shader_uniform3f(shaderId, "light.specular", 1.0f, 1.0f, 1.0f);
-
-            float time = glfwGetTime();
 
             vec3 lightColor;
-            lightColor[0] = sin(time * 2.0f);
-            lightColor[1] = sin(time * 0.7f);
-            lightColor[2] = sin(time * 1.3f);
+            lightColor[0] = sin(glfwGetTime() * 2.0f);
+            lightColor[1] = sin(glfwGetTime() * 0.7f);
+            lightColor[2] = sin(glfwGetTime() * 1.3f);
 
             vec3 diffuseColor;
             glm_vec3_mul(lightColor, (vec3) {0.5f, 0.5f, 0.5f}, diffuseColor);
@@ -166,16 +158,22 @@ int main() {
 
             cg_shader_uniform3f(shaderId, "light.ambient", ambientColor[0], ambientColor[1], ambientColor[2]);
             cg_shader_uniform3f(shaderId, "light.diffuse", diffuseColor[0], diffuseColor[1], diffuseColor[2]);
+            cg_shader_uniform3f(shaderId, "light.specular", 1.0f, 1.0f, 1.0f);
+
+            cg_shader_uniform3f(shaderId, "material.ambient", 1.0f, 0.5f, 0.31f);
+            cg_shader_uniform3f(shaderId, "material.diffuse", 1.0f, 0.5f, 0.31f);
+            cg_shader_uniform3f(shaderId, "material.specular", 0.5f, 0.5f, 0.5f);
+            cg_shader_uniform1f(shaderId, "material.shininess", 32.0f);
 
             cg_texture_use(textureId, 0);
             cg_texture_use(textureId, 1);
 
             glBindVertexArray(VAO[0]);
-            for(unsigned int i = 0; i < 10; i++)
+            for(unsigned int i = 0; i < 1; i++)
             {
                 mat4 model = GLM_MAT4_IDENTITY;
-                glm_translate_make(model, cubePositions[i]);
-                float angle = 20.0f * i;
+                //glm_translate_make(model, cubePositions[i]);
+                //float angle = 20.0f * i;
                 //glm_rotate(model, glm_rad(angle), (vec3) {1.0f, 0.3f, 0.5f});
                 //glm_rotate(model, (float)glfwGetTime(), (vec3) {0.5f, 1.0f, 0.0f});
                 cg_shader_uniform_matrix4fv(shaderId, "model", &model);
@@ -186,11 +184,10 @@ int main() {
         {
             cg_shader_use(shaderLight);
 
-            cg_shader_uniform_matrix4fv(shaderLight, "view", &view);
             cg_shader_uniform_matrix4fv(shaderLight, "projection", &projection);
+            cg_shader_uniform_matrix4fv(shaderLight, "view", &view);
 
             glBindVertexArray(VAO[1]);
-            vec3 lightPos = {1.2f, 1.0f, 2.0f};
             mat4 model = GLM_MAT4_IDENTITY;
             glm_translate_make(model, lightPos);
             glm_scale(model, (vec3) {0.2f, 0.2f, 0.2f});
