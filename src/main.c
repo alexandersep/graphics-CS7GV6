@@ -139,7 +139,6 @@ int main() {
         vec3 lightPos = {1.2f, 1.0f, 2.0f};
         {
             cg_shader_use(shaderId);
-            cg_shader_uniform3f(shaderId, "light.position", lightPos[0], lightPos[1], lightPos[2]);
             cg_shader_uniform3f(shaderId, "viewPos", camera.pos[0], camera.pos[1], camera.pos[2]);
 
             cg_shader_uniform_matrix4fv(shaderId, "view", &view);
@@ -150,7 +149,16 @@ int main() {
             cg_shader_uniform3f(shaderId, "light.diffuse", 0.5f, 0.5f, 0.5f);
             cg_shader_uniform3f(shaderId, "light.specular", 1.0f, 1.0f, 1.0f);
 
-            cg_shader_uniform1f(shaderId, "material.shininess", 64.0f);
+            cg_shader_uniform3f(shaderId, "light.position", camera.pos[0], camera.pos[1], camera.pos[2]);
+            cg_shader_uniform3f(shaderId, "light.direction", camera.front[0], camera.front[1], camera.front[2]);
+            cg_shader_uniform1f(shaderId, "light.cutOff", cos(glm_rad(12.5f)));
+            cg_shader_uniform1f(shaderId, "light.outerCutOff", cos(glm_rad(17.5f)));
+
+            cg_shader_uniform1f(shaderId, "light.constant", 1.0f);
+            cg_shader_uniform1f(shaderId, "light.linear", 0.09f);
+            cg_shader_uniform1f(shaderId, "light.quadratic", 0.032f);
+
+            cg_shader_uniform1f(shaderId, "material.shininess", 32.0f);
 
             cg_texture_use(textureId, 0);
             cg_texture_use(textureId, 1);
@@ -161,9 +169,9 @@ int main() {
             {
                 mat4 model = GLM_MAT4_IDENTITY;
                 glm_translate_make(model, cubePositions[i]);
-                //float angle = 20.0f * i;
-                //glm_rotate(model, glm_rad(angle), (vec3) {1.0f, 0.3f, 0.5f});
-                //glm_rotate(model, (float)glfwGetTime(), (vec3) {0.5f, 1.0f, 0.0f});
+                float angle = 20.0f * i;
+                glm_rotate(model, glm_rad(angle), (vec3) {1.0f, 0.3f, 0.5f});
+                glm_rotate(model, (float)glfwGetTime(), (vec3) {0.5f, 1.0f, 0.0f});
                 cg_shader_uniform_matrix4fv(shaderId, "model", &model);
 
                 glDrawArrays(GL_TRIANGLES, 0, 36);
