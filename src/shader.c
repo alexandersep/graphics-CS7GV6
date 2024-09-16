@@ -8,20 +8,20 @@ static unsigned int cg_shaderid_create(int glTypeShader) {
     return shaderId;
 }
 
-static void cg_shaderid_check(unsigned int shaderId, const char* shaderSrc) {
+static void cg_shaderid_check(unsigned int shaderId, const char* shaderSrc, const char* shaderPath) {
     int success;
     char infoLog[LOG_SIZE];
     glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(shaderId, LOG_SIZE, NULL, infoLog);
-        fprintf(stderr, "Error: shader compilation failed: %s\n", shaderSrc);
+        fprintf(stderr, "Error: shader compilation failed in file: %s\n", shaderPath);
     }
 }
 
-static void cg_shader_compile(int shaderId, const char* shaderSrc) {
+static void cg_shader_compile(int shaderId, const char* shaderSrc, const char* shaderPath) {
     glShaderSource(shaderId, 1, &shaderSrc, NULL);
     glCompileShader(shaderId);
-    cg_shaderid_check(shaderId, shaderSrc);
+    cg_shaderid_check(shaderId, shaderSrc, shaderPath);
 }
 
 static unsigned int cg_program_create() {
@@ -57,10 +57,10 @@ unsigned int cg_shader_create(const char* vertexPath, const char* fragmentPath) 
     cg_file_read(&fragmentShaderSrc, fragmentPath);
 
     unsigned int vertexShader = cg_shaderid_create(GL_VERTEX_SHADER);
-    cg_shader_compile(vertexShader, vertexShaderSrc);
+    cg_shader_compile(vertexShader, vertexShaderSrc, vertexPath);
 
     unsigned int fragmentShader = cg_shaderid_create(GL_FRAGMENT_SHADER);
-    cg_shader_compile(fragmentShader, fragmentShaderSrc);
+    cg_shader_compile(fragmentShader, fragmentShaderSrc, fragmentPath);
 
     unsigned int programId = cg_program_create();
     cg_program_link(programId, vertexShader, fragmentShader);
@@ -91,7 +91,6 @@ void cg_shader_uniform2f(unsigned int programId, const char* name, float x, floa
 void cg_shader_uniform3f(unsigned int programId, const char* name, float x, float y, float z) {
     glUniform3f(glGetUniformLocation(programId, name), x, y, z);
 }
-
 
 void cg_shader_destroy(unsigned int programId) {
     glDeleteProgram(programId);

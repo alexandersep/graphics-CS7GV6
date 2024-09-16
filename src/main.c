@@ -110,13 +110,13 @@ int main() {
     unsigned int textureId[2];
     cg_texture_create(textureId, 2);
     cg_texture_bind(textureId, 0);
-    cg_texture_load("res/images/wall.jpg");
+    cg_texture_load("res/images/container.png");
     cg_texture_bind(textureId, 1);
-    cg_texture_load("res/images/awesomeface.png");
+    cg_texture_load("res/images/container_specular.png");
 
     cg_shader_use(shaderId);
-    cg_shader_uniform1i(shaderId, "texture1", 0);
-    cg_shader_uniform1i(shaderId, "texture2", 1);
+    cg_shader_uniform1i(shaderId, "material.diffuse", 0);
+    cg_shader_uniform1i(shaderId, "material.specular", 1);
 
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
@@ -144,35 +144,23 @@ int main() {
 
             cg_shader_uniform_matrix4fv(shaderId, "view", &view);
             cg_shader_uniform_matrix4fv(shaderId, "projection", &projection);
-            cg_shader_uniform3f(shaderId, "objectColor", 1.0f, 0.5f, 0.31f);
+            cg_shader_uniform3f(shaderId, "objectColor", 1.0f, 1.0f, 1.0f);
 
-            vec3 lightColor;
-            lightColor[0] = sin(glfwGetTime() * 2.0f);
-            lightColor[1] = sin(glfwGetTime() * 0.7f);
-            lightColor[2] = sin(glfwGetTime() * 1.3f);
-
-            vec3 diffuseColor;
-            glm_vec3_mul(lightColor, (vec3) {0.5f, 0.5f, 0.5f}, diffuseColor);
-            vec3 ambientColor;
-            glm_vec3_mul(diffuseColor, (vec3) {0.2f, 0.2f, 0.2f}, ambientColor);
-
-            cg_shader_uniform3f(shaderId, "light.ambient", ambientColor[0], ambientColor[1], ambientColor[2]);
-            cg_shader_uniform3f(shaderId, "light.diffuse", diffuseColor[0], diffuseColor[1], diffuseColor[2]);
+            cg_shader_uniform3f(shaderId, "light.ambient", 0.2f, 0.2f, 0.2f);
+            cg_shader_uniform3f(shaderId, "light.diffuse", 0.5f, 0.5f, 0.5f);
             cg_shader_uniform3f(shaderId, "light.specular", 1.0f, 1.0f, 1.0f);
 
-            cg_shader_uniform3f(shaderId, "material.ambient", 1.0f, 0.5f, 0.31f);
-            cg_shader_uniform3f(shaderId, "material.diffuse", 1.0f, 0.5f, 0.31f);
-            cg_shader_uniform3f(shaderId, "material.specular", 0.5f, 0.5f, 0.5f);
-            cg_shader_uniform1f(shaderId, "material.shininess", 32.0f);
+            cg_shader_uniform1f(shaderId, "material.shininess", 64.0f);
 
             cg_texture_use(textureId, 0);
             cg_texture_use(textureId, 1);
+            cg_texture_use(textureId, 2);
 
             glBindVertexArray(VAO[0]);
-            for(unsigned int i = 0; i < 1; i++)
+            for(unsigned int i = 0; i < 10; i++)
             {
                 mat4 model = GLM_MAT4_IDENTITY;
-                //glm_translate_make(model, cubePositions[i]);
+                glm_translate_make(model, cubePositions[i]);
                 //float angle = 20.0f * i;
                 //glm_rotate(model, glm_rad(angle), (vec3) {1.0f, 0.3f, 0.5f});
                 //glm_rotate(model, (float)glfwGetTime(), (vec3) {0.5f, 1.0f, 0.0f});
