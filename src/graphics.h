@@ -4,6 +4,7 @@
 #define GLFW_INCLUDE_NONE
 #include "glad/gl.h"
 #include "stb_image.h"
+#include "stb_ds.h"
 
 #include <GLFW/glfw3.h>
 #include <cglm/cglm.h>
@@ -33,6 +34,7 @@ enum KeyMap {
     DOWN = GLFW_KEY_LEFT_SHIFT,
 };
 
+// Camera
 typedef struct {
     float yaw;
     float pitch;
@@ -46,7 +48,6 @@ typedef struct {
     bool focus;
 } Mouse;
 
-// Camera
 typedef struct {
     float speed;
     float zoom;
@@ -60,11 +61,31 @@ typedef struct {
 } Camera;
 
 typedef struct {
-    unsigned int VAO;
-    unsigned int VBO;
-    unsigned int EBO;
-    unsigned int size;
+    vec3 position;
+    vec3 normal;
+    vec2 texCoords;
+} Vertex;
+
+typedef struct {
+    unsigned int id;
+    char* type;
+    char path[255];
+} Texture;
+
+// Mesh
+typedef struct {
+    Vertex* vertices;
+    unsigned int* indices;
+    Texture* textures;
+    unsigned int VAO, VBO, EBO;
 } Mesh;
+
+typedef struct {
+    Mesh* meshes;
+    Texture* texturesLoaded;
+    char directory[255];
+    size_t directoryLength;
+} Model;
 
 // control
 GLFWwindow* cg_control_window_create(Camera* camera, int width, int height, const char* title);
@@ -89,9 +110,20 @@ size_t cg_file_read(char** src, const char* srcPath);
 int cg_file_load_scene(const char* filePath);
 
 // Texture
-void cg_texture_create(unsigned int* textureIds, int size);
-void cg_texture_load(const char* texturePath);
-void cg_texture_bind(unsigned int* textureId, unsigned int index);
-void cg_texture_use(unsigned int* textureId, unsigned int index);
+unsigned int cg_texture_load(const char* texturePath);
+
+// Mesh
+void cg_mesh_create(Mesh* mesh, Vertex* vertices, unsigned int* indices, Texture* textures);
+void cg_mesh_draw(Mesh* mesh, unsigned int shaderId);
+void cg_mesh_destroy(Mesh* mesh);
+
+// Mesh
+void cg_model_create(Model* model, const char* filePath);
+void cg_model_load(Model* model, const char* filePath);
+void cg_model_draw(Model* model, unsigned int shaderId);
+void cg_model_destroy(Model* model);
+
+// Tool
+void cg_tool_itoa(char* str, int n);
 
 #endif // GRAPHICS_H 

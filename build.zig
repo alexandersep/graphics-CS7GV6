@@ -53,4 +53,7 @@ const generic_source_files = [_][]const u8{
     "src/shader.c",
     "src/file.c",
     "src/texture.c",
+    "src/mesh.c",
+    "src/tool.c",
+    "src/model.c",
 };
