@@ -1,5 +1,4 @@
 #include "graphics.h"
-#include <assert.h>
 
 typedef struct aiScene aiScene;
 typedef struct aiMesh aiMesh;
@@ -96,6 +95,7 @@ static void cg_model_process_mesh(Model* model, Mesh* m, aiMesh* mesh, const aiS
     arrfree(specularMaps);
     arrfree(normalMaps);
 
+    //printf("should be printing path %s\n", textures[0].path);
     cg_mesh_create(m, vertices, indices, textures);
     arrfree(vertices);
     arrfree(indices);
@@ -115,7 +115,7 @@ static void cg_model_process_node(Model* model, aiNode* node, const aiScene* sce
 }
 
 void cg_model_load(Model* model, const char* filePath) {
-    const aiScene* scene = aiImportFile(filePath, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+    const aiScene* scene = aiImportFile(filePath, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
    if (!scene) {
        fprintf(stderr, "Failed to open file using assimp: %s\n", aiGetErrorString());
    }

@@ -78,7 +78,6 @@ void cg_mesh_draw(Mesh* mesh, unsigned int shaderId) {
 
         glBindTexture(GL_TEXTURE_2D, mesh->textures[i].id);
     }
-
     glBindVertexArray(mesh->VAO);
     glDrawElements(GL_TRIANGLES, (unsigned int) arrlenu(mesh->indices), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);

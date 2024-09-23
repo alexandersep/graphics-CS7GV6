@@ -103,17 +103,3 @@ size_t cg_file_read(char** src, const char* srcPath) {
 
     return size;
 }
-
-// TODO: unused, make model loading function
-int cg_file_load_scene(const char* filePath) {
-   const struct aiScene* pScene = aiImportFile(filePath,
-        aiProcess_GenSmoothNormals |
-        aiProcess_CalcTangentSpace |
-        aiProcess_Triangulate);
-   if (!pScene) {
-       fprintf(stderr, "Failed to open file using assimp: %s\n", aiGetErrorString());
-       return false;
-   }
-   aiReleaseImport(pScene);
-   return true;
-}

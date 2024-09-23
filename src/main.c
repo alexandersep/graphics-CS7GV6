@@ -34,11 +34,10 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);
 
-    Model backpack;
-    cg_model_create(&backpack, "res/models/backpack/backpack.obj");
-
-    Cube cube;
-    cg_cube_create(&cube);
+    Model grass, sand, water;
+    cg_model_create(&grass, "res/models/wfc/grass/grass.obj");
+    cg_model_create(&sand, "res/models/wfc/sand/sand.obj");
+    cg_model_create(&water, "res/models/wfc/water/water.obj");
 
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
@@ -86,21 +85,33 @@ int main() {
 
             // render the loaded model
             mat4 model = GLM_MAT4_IDENTITY;
-            glm_translate(model, (vec3) {0.0f, 0.0f, 0.0f}); // translate it down so it's at the center of the scene
-            glm_scale(model, (vec3) {1.0f, 1.0f, 1.0f});	// it's a bit too big for our scene, so scale it down
+            glm_mat4_identity(model);
+            glm_translate(model, (vec3) {2.0f, 0.0f, 0.0f});
             cg_shader_uniform_matrix4fv(shaderId, "model", &model);
+            cg_model_draw(&grass, shaderId);
 
-            cg_model_draw(&backpack, shaderId);
+            glm_mat4_identity(model);
+            glm_translate(model, (vec3) {4.0f, 0.0f, 0.0f});
+            cg_shader_uniform_matrix4fv(shaderId, "model", &model);
+            cg_model_draw(&sand, shaderId);
+
+            glm_mat4_identity(model);
+            glm_translate(model, (vec3) {6.0f, 0.0f, 0.0f});
+            cg_shader_uniform_matrix4fv(shaderId, "model", &model);
+            cg_model_draw(&water, shaderId);
+
         }
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-    glDeleteBuffers(1, &cube.VAO);
-    glDeleteBuffers(1, &cube.VBO);
     cg_shader_destroy(shaderId);
     cg_shader_destroy(shaderLight);
-    cg_model_destroy(&backpack);
+
+    cg_model_destroy(&grass);
+    cg_model_destroy(&water);
+    cg_model_destroy(&sand);
+
     glfwTerminate();
     return 0;
 }
