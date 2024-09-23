@@ -1,5 +1,4 @@
 # Ignore Uncessary files from Windows/Linux
-*.obj
 *.exe
 a.out
 *.ilk

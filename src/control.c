@@ -19,6 +19,19 @@ static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) 
     }
 }
 
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    static int isPolyMode = 0;
+    if (key == GLFW_KEY_P && action == GLFW_RELEASE) {
+        if (!isPolyMode) {
+            glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+            isPolyMode = 1;
+        } else {
+            glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+            isPolyMode = 0;
+        }
+    }
+}
+
 void cg_control_camera_move(GLFWwindow* window, float deltaTime) {
     Camera* camera = glfwGetWindowUserPointer(window);
 
@@ -114,6 +127,7 @@ GLFWwindow* cg_control_window_create(Camera* camera, int width, int height, cons
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetErrorCallback(error_callback);
+    glfwSetKeyCallback(window, key_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
     glfwSetWindowUserPointer(window, camera);
@@ -121,7 +135,7 @@ GLFWwindow* cg_control_window_create(Camera* camera, int width, int height, cons
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // Initialize GLAD
-    if (!gladLoadGL(glfwGetProcAddress)) {
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         int error = glfwGetError(NULL);
         fprintf(stderr, "Failed to intialise GLAD: %d\n", error);
         return NULL;

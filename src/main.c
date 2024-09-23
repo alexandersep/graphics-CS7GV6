@@ -1,13 +1,20 @@
 #include "graphics.h"
-
 #include <stdio.h>
 
-vec3 pointLightPositions[] = {
+vec3 pointLights[] = {
     { 0.7f,  0.2f,  2.0f},
     { 2.3f, -3.3f, -4.0f},
     {-4.0f,  2.0f, -12.0f},
     { 0.0f,  0.0f, -3.0f}
 };
+
+/*
+typedef struct {
+    Model backpack;
+    Cube cube;
+    Camera camera;
+} Scene;
+*/
 
 int main() {
     Camera camera;
@@ -20,16 +27,18 @@ int main() {
     }
     unsigned int shaderId =
         cg_shader_create("res/shaders/vertex/vs-texture.glsl", "res/shaders/fragment/fs-texture.glsl");
-
-    //cg_file_load_scene("res/models/cube/cube.obj");
+    unsigned int shaderLight =
+        cg_shader_create("res/shaders/vertex/vs-light.glsl", "res/shaders/fragment/fs-light.glsl");
 
     stbi_set_flip_vertically_on_load(TRUE);
 
     glEnable(GL_DEPTH_TEST);
-    //glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
     Model backpack;
     cg_model_create(&backpack, "res/models/backpack/backpack.obj");
+
+    Cube cube;
+    cg_cube_create(&cube);
 
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
@@ -60,37 +69,7 @@ int main() {
             cg_shader_uniform3f(shaderId, "dirLight.specular", 0.5f, 0.5f, 0.5f);
             cg_shader_uniform1f(shaderId, "material.shininess", 32.0f);  // Adjust shininess
 
-            cg_shader_uniform3f(shaderId, "pointLights[0].position", pointLightPositions[0][0], pointLightPositions[0][1], pointLightPositions[0][2]);
-            cg_shader_uniform3f(shaderId, "pointLights[0].ambient", 0.2f, 0.2f, 0.2f);
-            cg_shader_uniform3f(shaderId, "pointLights[0].diffuse", 0.5f, 0.5f, 0.5f);
-            cg_shader_uniform3f(shaderId, "pointLights[0].specular", 1.0f, 1.0f, 1.0f);
-            cg_shader_uniform1f(shaderId, "pointLights[0].constant", 1.0f);
-            cg_shader_uniform1f(shaderId, "pointLights[0].linear", 0.09f);
-            cg_shader_uniform1f(shaderId, "pointLights[0].quadratic", 0.032f);
-
-            cg_shader_uniform3f(shaderId, "pointLights[1].position", pointLightPositions[1][0], pointLightPositions[1][1], pointLightPositions[1][2]);
-            cg_shader_uniform3f(shaderId, "pointLights[1].ambient", 0.2f, 0.2f, 0.2f);
-            cg_shader_uniform3f(shaderId, "pointLights[1].diffuse", 0.5f, 0.5f, 0.5f);
-            cg_shader_uniform3f(shaderId, "pointLights[1].specular", 1.0f, 1.0f, 1.0f);
-            cg_shader_uniform1f(shaderId, "pointLights[1].constant", 1.0f);
-            cg_shader_uniform1f(shaderId, "pointLights[1].linear", 0.09f);
-            cg_shader_uniform1f(shaderId, "pointLights[1].quadratic", 0.032f);
-
-            cg_shader_uniform3f(shaderId, "pointLights[2].position", pointLightPositions[2][0], pointLightPositions[2][1], pointLightPositions[2][2]);
-            cg_shader_uniform3f(shaderId, "pointLIghts[2].ambient", 0.2f, 0.2f, 0.2f);
-            cg_shader_uniform3f(shaderId, "pointLIghts[2].diffuse", 0.5f, 0.5f, 0.5f);
-            cg_shader_uniform3f(shaderId, "pointLIghts[2].specular", 1.0f, 1.0f, 1.0f);
-            cg_shader_uniform1f(shaderId, "pointLights[2].constant", 1.0f);
-            cg_shader_uniform1f(shaderId, "pointLights[2].linear", 0.09f);
-            cg_shader_uniform1f(shaderId, "pointLights[2].quadratic", 0.032f);
-
-            cg_shader_uniform3f(shaderId, "pointLights[3].position", pointLightPositions[3][0], pointLightPositions[3][1], pointLightPositions[3][2]);
-            cg_shader_uniform3f(shaderId, "pointLights[3].ambient", 0.2f, 0.2f, 0.2f);
-            cg_shader_uniform3f(shaderId, "pointLights[3].diffuse", 0.5f, 0.5f, 0.5f);
-            cg_shader_uniform3f(shaderId, "pointLights[3].specular", 1.0f, 1.0f, 1.0f);
-            cg_shader_uniform1f(shaderId, "pointLights[3].constant", 1.0f);
-            cg_shader_uniform1f(shaderId, "pointLights[3].linear", 0.09f);
-            cg_shader_uniform1f(shaderId, "pointLights[3].quadratic", 0.032f);
+            cg_shader_light_pointLights(shaderId, pointLights, 4);
 
             cg_shader_uniform3f(shaderId, "spotLight.position", camera.pos[0], camera.pos[1], camera.pos[2]);
             cg_shader_uniform3f(shaderId, "spotLight.direction", camera.front[0], camera.front[1], camera.front[2]);
@@ -117,7 +96,10 @@ int main() {
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+    glDeleteBuffers(1, &cube.VAO);
+    glDeleteBuffers(1, &cube.VBO);
     cg_shader_destroy(shaderId);
+    cg_shader_destroy(shaderLight);
     cg_model_destroy(&backpack);
     glfwTerminate();
     return 0;

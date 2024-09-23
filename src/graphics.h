@@ -2,7 +2,7 @@
 #define GRAPHICS_H 
 
 #define GLFW_INCLUDE_NONE
-#include "glad/gl.h"
+#include "glad/glad.h"
 #include "stb_image.h"
 #include "stb_ds.h"
 
@@ -58,6 +58,7 @@ typedef struct {
     vec3 up;
     vec3 right;
     vec3 worldup;
+    float deltaTime;
 } Camera;
 
 typedef struct {
@@ -87,6 +88,12 @@ typedef struct {
     size_t directoryLength;
 } Model;
 
+// Cube
+typedef struct {
+    vec3 vertices[2][3]; // 1 triangle
+    unsigned int VAO, VBO, EBO;
+} Cube;
+
 // control
 GLFWwindow* cg_control_window_create(Camera* camera, int width, int height, const char* title);
 void cg_control_camera_create(Camera* camera, float speed);
@@ -102,6 +109,7 @@ void cg_shader_uniform1f(unsigned int programId, const char* name, float x);
 void cg_shader_uniform2f(unsigned int programId, const char* name, float x, float y);
 void cg_shader_uniform3f(unsigned int programId, const char* name, float x, float y, float z);
 void cg_shader_uniform_matrix4fv(unsigned int programId, const char* name, mat4* projection);
+void cg_shader_light_pointLights(unsigned int programId, vec3* points, unsigned int size);
 void cg_shader_destroy(unsigned int programId);
 
 // File
@@ -125,5 +133,8 @@ void cg_model_destroy(Model* model);
 
 // Tool
 void cg_tool_itoa(char* str, int n);
+
+// cube
+void cg_cube_create(Cube* cube);
 
 #endif // GRAPHICS_H 

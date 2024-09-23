@@ -47,7 +47,7 @@ pub fn build(b: *std.Build) !void {
 
 const generic_source_files = [_][]const u8{
     "src/single_headers.c",
-    "src/gl.c",
+    "src/glad.c",
     "src/main.c",
     "src/control.c",
     "src/shader.c",
@@ -56,4 +56,5 @@ const generic_source_files = [_][]const u8{
     "src/mesh.c",
     "src/tool.c",
     "src/model.c",
+    "src/cube.c",
 };

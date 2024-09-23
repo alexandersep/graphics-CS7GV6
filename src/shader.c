@@ -1,4 +1,5 @@
 #include "graphics.h"
+#include <string.h>
 
 #define LOG_SIZE 512
 
@@ -68,6 +69,26 @@ unsigned int cg_shader_create(const char* vertexPath, const char* fragmentPath) 
     return programId;
 }
 
+void cg_shader_light_pointLights(unsigned int programId, vec3* pointLights, unsigned int size) {
+    char name[50];
+    for (unsigned int i = 0; i < size; i++) {
+        snprintf(name, sizeof(name), "pointLights[%d].position", i);
+        cg_shader_uniform3f(programId, name, pointLights[i][0], pointLights[i][1], pointLights[i][2]);
+        snprintf(name, sizeof(name), "pointLights[%d].ambient", i);
+        cg_shader_uniform3f(programId, name, 0.2f, 0.2f, 0.2f);
+        snprintf(name, sizeof(name), "pointLights[%d].diffuse", i);
+        cg_shader_uniform3f(programId, name, 0.5f, 0.5f, 0.5f);
+        snprintf(name, sizeof(name), "pointLights[%d].specular", i);
+        cg_shader_uniform3f(programId, name, 1.0f, 1.0f, 1.0f);
+        snprintf(name, sizeof(name), "pointLights[%d].constant", i);
+        cg_shader_uniform1f(programId, name, 1.0f);
+        snprintf(name, sizeof(name), "pointLights[%d].linear", i);
+        cg_shader_uniform1f(programId, name, 0.09f);
+        snprintf(name, sizeof(name), "pointLights[%d].quadratic", i);
+        cg_shader_uniform1f(programId, name, 0.032f);
+    }
+}
+
 void cg_shader_use(unsigned int programId) {
     glUseProgram(programId);
 }
@@ -81,7 +102,11 @@ void cg_shader_uniform_matrix4fv(unsigned int programId, const char* name, mat4*
 }
 
 void cg_shader_uniform1f(unsigned int programId, const char* name, float x) {
-    glUniform1f(glGetUniformLocation(programId, name), x);
+    int res = glGetUniformLocation(programId, name);
+    if (res == -1) {
+        fprintf(stdout, "res uniform1f %d\n", res);
+    }
+    glUniform1f(res, x);
 }
 
 void cg_shader_uniform2f(unsigned int programId, const char* name, float x, float y) {
@@ -89,7 +114,11 @@ void cg_shader_uniform2f(unsigned int programId, const char* name, float x, floa
 }
 
 void cg_shader_uniform3f(unsigned int programId, const char* name, float x, float y, float z) {
-    glUniform3f(glGetUniformLocation(programId, name), x, y, z);
+    int res = glGetUniformLocation(programId, name);
+    if (res == -1) {
+        fprintf(stdout, "res uniform3f %d\n", res);
+    }
+    glUniform3f(res, x, y, z);
 }
 
 void cg_shader_destroy(unsigned int programId) {
