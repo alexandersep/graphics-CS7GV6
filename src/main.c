@@ -2,10 +2,10 @@
 #include <stdio.h>
 
 vec3 pointLights[] = {
-    { 0.7f,  0.2f,  2.0f},
+    { 0.7f,  0.2f,  4.0f},
     { 2.3f, -3.3f, -4.0f},
-    {-4.0f,  2.0f, -12.0f},
-    { 0.0f,  0.0f, -3.0f}
+    { 5.0f,  5.0f, 0.0f},
+    { 0.0f,  0.0f, -3.0f},
 };
 
 /*
@@ -83,12 +83,14 @@ int main() {
             cg_shader_uniform1f(shaderId, "spotLight.cutOff", cos(glm_rad(12.5f)));
             cg_shader_uniform1f(shaderId, "spotLight.outerCutOff", cos(glm_rad(17.5f)));
 
+            wfc_draw(&sand, shaderId);
+
             // render the loaded model
             mat4 model = GLM_MAT4_IDENTITY;
-            glm_mat4_identity(model);
-            glm_translate(model, (vec3) {2.0f, 0.0f, 0.0f});
-            cg_shader_uniform_matrix4fv(shaderId, "model", &model);
-            cg_model_draw(&grass, shaderId);
+            //glm_mat4_identity(model);
+            //glm_translate(model, (vec3) {2.0f, 0.0f, 0.0f});
+            //cg_shader_uniform_matrix4fv(shaderId, "model", &model);
+            //cg_model_draw(&grass, shaderId);
 
             glm_mat4_identity(model);
             glm_translate(model, (vec3) {4.0f, 0.0f, 0.0f});
@@ -99,6 +101,22 @@ int main() {
             glm_translate(model, (vec3) {6.0f, 0.0f, 0.0f});
             cg_shader_uniform_matrix4fv(shaderId, "model", &model);
             cg_model_draw(&water, shaderId);
+
+        }
+        {
+            cg_shader_use(shaderLight);
+            cg_shader_uniform_matrix4fv(shaderLight, "projection", &projection);
+            cg_shader_uniform_matrix4fv(shaderLight, "view", &view);
+
+            mat4 model;
+            for (int i = 0; i < 4; i++) {
+                cg_shader_uniform3f(shaderLight, "color", 0.2f, 1.0f, 0.3f);
+
+                glm_mat4_identity(model);
+                glm_translate(model, (vec3) {pointLights[i][0], pointLights[i][1], pointLights[i][2]});
+                cg_shader_uniform_matrix4fv(shaderId, "model", &model);
+                cg_model_draw(&water, shaderId);
+            }
 
         }
 

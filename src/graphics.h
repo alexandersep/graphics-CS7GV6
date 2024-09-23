@@ -94,6 +94,19 @@ typedef struct {
     unsigned int VAO, VBO, EBO;
 } Cube;
 
+// wfc
+typedef struct {
+    int px;
+    int nx;
+
+    int py;
+    int ny;
+
+    int pz;
+    int nz;
+
+} WFC_Module;
+
 // control
 GLFWwindow* cg_control_window_create(Camera* camera, int width, int height, const char* title);
 void cg_control_camera_create(Camera* camera, float speed);
@@ -133,8 +146,17 @@ void cg_model_destroy(Model* model);
 
 // Tool
 void cg_tool_itoa(char* str, int n);
+int cg_tool_count_bits(int n);
 
 // cube
 void cg_cube_create(Cube* cube);
+
+// wfc
+void wfc_draw(Model* m, unsigned int shaderId);
+WFC_Module* wfc_module_create_grass();
+WFC_Module* wfc_module_create_sand();
+WFC_Module* wfc_module_create_water();
+WFC_Module* wfc_module_create_air();
+void wfc_module_destroy_module(WFC_Module* module);
 
 #endif // GRAPHICS_H 

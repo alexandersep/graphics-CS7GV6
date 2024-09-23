@@ -57,4 +57,5 @@ const generic_source_files = [_][]const u8{
     "src/tool.c",
     "src/model.c",
     "src/cube.c",
+    "src/wfc.c",
 };
