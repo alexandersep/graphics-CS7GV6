@@ -95,7 +95,6 @@ static void cg_model_process_mesh(Model* model, Mesh* m, aiMesh* mesh, const aiS
     arrfree(specularMaps);
     arrfree(normalMaps);
 
-    //printf("should be printing path %s\n", textures[0].path);
     cg_mesh_create(m, vertices, indices, textures);
     arrfree(vertices);
     arrfree(indices);
@@ -140,9 +139,21 @@ void cg_model_create(Model* model, const char* filePath) {
     cg_model_load(model, filePath);
 }
 
-void cg_model_draw(Model* model, unsigned int shaderId, unsigned int numInstances) {
+void cg_model_draw(Model* model, unsigned int shaderId) {
     for (unsigned int i = 0; i < arrlen(model->meshes); i++) {
-        cg_mesh_draw(&model->meshes[i], shaderId, numInstances);
+        cg_mesh_draw(&model->meshes[i], shaderId);
+    }
+}
+
+void cg_model_instance_setup(Model* model) {
+    for (unsigned int i = 0; i < arrlen(model->meshes); i++) {
+        cg_mesh_instance_setup(&model->meshes[i]);
+    }
+}
+
+void cg_model_instance_draw(Model* model, unsigned int shaderId, unsigned int numInstances) {
+    for (unsigned int i = 0; i < arrlen(model->meshes); i++) {
+        cg_mesh_instance_draw(&model->meshes[i], shaderId, numInstances);
     }
 }
 
