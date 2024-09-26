@@ -29,15 +29,33 @@ int main() {
         cg_shader_create("res/shaders/vertex/vs-texture.glsl", "res/shaders/fragment/fs-texture.glsl");
     unsigned int shaderLight =
         cg_shader_create("res/shaders/vertex/vs-light.glsl", "res/shaders/fragment/fs-light.glsl");
+    unsigned int shaderInstance =
+        cg_shader_create("res/shaders/vertex/vs-instance.glsl", "res/shaders/fragment/fs-texture.glsl");
 
     stbi_set_flip_vertically_on_load(TRUE);
 
     glEnable(GL_DEPTH_TEST);
+    //glDepthFunc(GL_LESS);
+    //glEnable(GL_STENCIL_TEST);
+    //glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+    //glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
     Model grass, sand, water;
     cg_model_create(&grass, "res/models/wfc/grass/grass.obj");
     cg_model_create(&sand, "res/models/wfc/sand/sand.obj");
     cg_model_create(&water, "res/models/wfc/water/water.obj");
+
+    vec2 translations[4];
+    int index = 0;
+    float offset = 2.0f;
+    for (int x = 0; x < 2; x ++) {
+        for (int y = 0; y < 2; y ++) {
+            vec2 translation;
+            translation[0] = (x*2.5) + offset;
+            translation[1] = (y*2.5) + offset;
+            glm_vec2_copy(translation, translations[index++]);
+        }
+    }
 
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
@@ -58,47 +76,100 @@ int main() {
         glm_perspective(glm_rad(camera.zoom), (float) CG_SCREEN_X / (float) CG_SCREEN_Y, 0.1f, 100.0f, projection);
 
         {
-            cg_shader_use(shaderId);
-            cg_shader_uniform_matrix4fv(shaderId, "projection", &projection);
-            cg_shader_uniform_matrix4fv(shaderId, "view", &view);
-
-            cg_shader_uniform3f(shaderId, "dirLight.direction", -0.2f, -1.0f, -0.3f);
-            cg_shader_uniform3f(shaderId, "dirLight.ambient", 0.05f, 0.05f, 0.05f);
-            cg_shader_uniform3f(shaderId, "dirLight.diffuse", 0.4f, 0.4f, 0.4f);
-            cg_shader_uniform3f(shaderId, "dirLight.specular", 0.5f, 0.5f, 0.5f);
-            cg_shader_uniform1f(shaderId, "material.shininess", 32.0f);  // Adjust shininess
-
-            cg_shader_light_pointLights(shaderId, pointLights, 4);
-
-            cg_shader_uniform3f(shaderId, "spotLight.position", camera.pos[0], camera.pos[1], camera.pos[2]);
-            cg_shader_uniform3f(shaderId, "spotLight.direction", camera.front[0], camera.front[1], camera.front[2]);
-            cg_shader_uniform3f(shaderId, "spotLight.ambient", 0.0f, 0.0f, 0.0f);
-            cg_shader_uniform3f(shaderId, "spotLight.diffuse", 1.0f, 1.0f, 1.0f);
-            cg_shader_uniform3f(shaderId, "spotLight.specular", 1.0f, 1.0f, 1.0f);
-            cg_shader_uniform1f(shaderId, "spotLight.constant", 1.0f);
-            cg_shader_uniform1f(shaderId, "spotLight.linear", 0.09f);
-            cg_shader_uniform1f(shaderId, "spotLight.quadratic", 0.032f);
-            cg_shader_uniform1f(shaderId, "spotLight.cutOff", cos(glm_rad(12.5f)));
-            cg_shader_uniform1f(shaderId, "spotLight.outerCutOff", cos(glm_rad(15.0f)));     
-            cg_shader_uniform1f(shaderId, "spotLight.cutOff", cos(glm_rad(12.5f)));
-            cg_shader_uniform1f(shaderId, "spotLight.outerCutOff", cos(glm_rad(17.5f)));
-
             // render the loaded model
-            mat4 model = GLM_MAT4_IDENTITY;
-            glm_mat4_identity(model);
-            glm_translate(model, (vec3) {2.0f, 0.0f, 0.0f});
-            cg_shader_uniform_matrix4fv(shaderId, "model", &model);
-            cg_model_draw(&grass, shaderId);
+            mat4 model;
+
+            //glStencilMask(0x00);
+            //glEnable(GL_DEPTH_TEST);
+
+            cg_shader_use(shaderInstance);
+            {
+                cg_shader_uniform_matrix4fv(shaderInstance, "projection", &projection);
+                cg_shader_uniform_matrix4fv(shaderInstance, "view", &view);
+
+                cg_shader_uniform_matrix4fv(shaderId, "projection", &projection);
+                cg_shader_uniform_matrix4fv(shaderId, "view", &view);
+
+                cg_shader_uniform3f(shaderId, "dirLight.direction", -0.2f, -1.0f, -0.3f);
+                cg_shader_uniform3f(shaderId, "dirLight.ambient", 0.05f, 0.05f, 0.05f);
+                cg_shader_uniform3f(shaderId, "dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+                cg_shader_uniform3f(shaderId, "dirLight.specular", 0.5f, 0.5f, 0.5f);
+                cg_shader_uniform1f(shaderId, "material.shininess", 32.0f);  // Adjust shininess
+
+                cg_shader_light_pointLights(shaderId, pointLights, 4);
+
+                cg_shader_uniform3f(shaderId, "spotLight.position", camera.pos[0], camera.pos[1], camera.pos[2]);
+                cg_shader_uniform3f(shaderId, "spotLight.direction", camera.front[0], camera.front[1], camera.front[2]);
+                cg_shader_uniform3f(shaderId, "spotLight.ambient", 0.0f, 0.0f, 0.0f);
+                cg_shader_uniform3f(shaderId, "spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+                cg_shader_uniform3f(shaderId, "spotLight.specular", 1.0f, 1.0f, 1.0f);
+                cg_shader_uniform1f(shaderId, "spotLight.constant", 1.0f);
+                cg_shader_uniform1f(shaderId, "spotLight.linear", 0.09f);
+                cg_shader_uniform1f(shaderId, "spotLight.quadratic", 0.032f);
+                cg_shader_uniform1f(shaderId, "spotLight.cutOff", cos(glm_rad(12.5f)));
+                cg_shader_uniform1f(shaderId, "spotLight.outerCutOff", cos(glm_rad(15.0f)));
+                cg_shader_uniform1f(shaderId, "spotLight.cutOff", cos(glm_rad(12.5f)));
+                cg_shader_uniform1f(shaderId, "spotLight.outerCutOff", cos(glm_rad(17.5f)));
+            }
 
             glm_mat4_identity(model);
-            glm_translate(model, (vec3) {4.0f, 0.0f, 0.0f});
-            cg_shader_uniform_matrix4fv(shaderId, "model", &model);
-            cg_model_draw(&sand, shaderId);
+            cg_shader_uniform_matrix4fv(shaderInstance, "model", &model);
+            cg_model_draw(&sand, shaderInstance, 4);
+
+            cg_shader_use(shaderId);
+            {
+                cg_shader_uniform_matrix4fv(shaderId, "projection", &projection);
+                cg_shader_uniform_matrix4fv(shaderId, "view", &view);
+
+                cg_shader_uniform3f(shaderId, "dirLight.direction", -0.2f, -1.0f, -0.3f);
+                cg_shader_uniform3f(shaderId, "dirLight.ambient", 0.05f, 0.05f, 0.05f);
+                cg_shader_uniform3f(shaderId, "dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+                cg_shader_uniform3f(shaderId, "dirLight.specular", 0.5f, 0.5f, 0.5f);
+                cg_shader_uniform1f(shaderId, "material.shininess", 32.0f);  // Adjust shininess
+
+                cg_shader_light_pointLights(shaderId, pointLights, 4);
+
+                cg_shader_uniform3f(shaderId, "spotLight.position", camera.pos[0], camera.pos[1], camera.pos[2]);
+                cg_shader_uniform3f(shaderId, "spotLight.direction", camera.front[0], camera.front[1], camera.front[2]);
+                cg_shader_uniform3f(shaderId, "spotLight.ambient", 0.0f, 0.0f, 0.0f);
+                cg_shader_uniform3f(shaderId, "spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+                cg_shader_uniform3f(shaderId, "spotLight.specular", 1.0f, 1.0f, 1.0f);
+                cg_shader_uniform1f(shaderId, "spotLight.constant", 1.0f);
+                cg_shader_uniform1f(shaderId, "spotLight.linear", 0.09f);
+                cg_shader_uniform1f(shaderId, "spotLight.quadratic", 0.032f);
+                cg_shader_uniform1f(shaderId, "spotLight.cutOff", cos(glm_rad(12.5f)));
+                cg_shader_uniform1f(shaderId, "spotLight.outerCutOff", cos(glm_rad(15.0f)));
+                cg_shader_uniform1f(shaderId, "spotLight.cutOff", cos(glm_rad(12.5f)));
+                cg_shader_uniform1f(shaderId, "spotLight.outerCutOff", cos(glm_rad(17.5f)));
+            }
+
+            // 1st. render pass, draw objects as normal, writing to the stencil buffer
+            //glStencilFunc(GL_ALWAYS, 1, 0xFF);
+            //glStencilMask(0xFF);
 
             glm_mat4_identity(model);
-            glm_translate(model, (vec3) {6.0f, 0.0f, 0.0f});
             cg_shader_uniform_matrix4fv(shaderId, "model", &model);
-            cg_model_draw(&water, shaderId);
+            cg_model_draw(&grass, shaderId, 0);
+
+            // 2nd. render pass: now draw slightly scaled versions of the objects, this time disabling stencil writing.
+            // Because the stencil buffer is now filled with several 1s. The parts of the buffer that are 1 are not drawn, thus only drawing
+            // the objects' size differences, making it look like borders.
+            //glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+            //glStencilMask(0x00);
+            //glDisable(GL_DEPTH_TEST);
+
+            //cg_shader_use(shaderLight);
+            //cg_shader_uniform_matrix4fv(shaderId, "projection", &projection);
+            //cg_shader_uniform_matrix4fv(shaderId, "view", &view);
+            //cg_shader_uniform3f(shaderLight, "color", 0.5f, 0.6f, 0.90f);
+
+            //glm_mat4_identity(model);
+            //glm_scale(model, (vec3) {1.1f, 1.1f, 1.1f});
+            //cg_shader_uniform_matrix4fv(shaderLight, "model", &model);
+            //cg_model_draw(&grass, shaderLight, 0);
+
+            //glStencilMask(0xFF);
+            //glStencilFunc(GL_ALWAYS, 0, 0xFF);
 
         }
 
@@ -107,6 +178,7 @@ int main() {
     }
     cg_shader_destroy(shaderId);
     cg_shader_destroy(shaderLight);
+    cg_shader_destroy(shaderInstance);
 
     cg_model_destroy(&grass);
     cg_model_destroy(&water);

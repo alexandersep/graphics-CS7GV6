@@ -26,6 +26,26 @@ static void cg_mesh_setup(Mesh* mesh) {
     glEnableVertexAttribArray(2);	
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords));
 
+    vec2 translations[4];
+    int index = 0;
+    float offset = 2.0f;
+    for (int x = 0; x < 2; x ++) {
+        for (int y = 0; y < 2; y ++) {
+            vec2 translation;
+            translation[0] = (x*2.5) + offset;
+            translation[1] = (y*2.5) + offset;
+            glm_vec2_copy(translation, translations[index++]);
+        }
+    }
+
+    // Instance
+    glGenBuffers(1, &mesh->instanceVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, mesh->instanceVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vec2) * 4, &translations[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glVertexAttribDivisor(3, 1);
+
     glBindVertexArray(0);
 }
 
@@ -45,7 +65,7 @@ void cg_mesh_create(Mesh* mesh, Vertex* vertices, unsigned int* indices, Texture
     cg_mesh_setup(mesh);
 }
 
-void cg_mesh_draw(Mesh* mesh, unsigned int shaderId) {
+void cg_mesh_draw(Mesh* mesh, unsigned int shaderId, unsigned int numInstances) {
     unsigned int diffuse = 1;
     unsigned int specular = 1;
     unsigned int normal = 1;
@@ -79,7 +99,11 @@ void cg_mesh_draw(Mesh* mesh, unsigned int shaderId) {
         glBindTexture(GL_TEXTURE_2D, mesh->textures[i].id);
     }
     glBindVertexArray(mesh->VAO);
-    glDrawElements(GL_TRIANGLES, (unsigned int) arrlenu(mesh->indices), GL_UNSIGNED_INT, 0);
+    if (numInstances <= 0) {
+        glDrawElements(GL_TRIANGLES, (unsigned int) arrlenu(mesh->indices), GL_UNSIGNED_INT, 0);
+    } else {
+        glDrawElementsInstanced(GL_TRIANGLES, (unsigned int) arrlenu(mesh->indices), GL_UNSIGNED_INT, 0, numInstances);
+    }
     glBindVertexArray(0);
 
     glActiveTexture(GL_TEXTURE0);

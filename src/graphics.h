@@ -78,7 +78,7 @@ typedef struct {
     Vertex* vertices;
     unsigned int* indices;
     Texture* textures;
-    unsigned int VAO, VBO, EBO;
+    unsigned int VAO, VBO, EBO, instanceVBO;
 } Mesh;
 
 typedef struct {
@@ -122,13 +122,13 @@ unsigned int cg_texture_load(const char* texturePath);
 
 // Mesh
 void cg_mesh_create(Mesh* mesh, Vertex* vertices, unsigned int* indices, Texture* textures);
-void cg_mesh_draw(Mesh* mesh, unsigned int shaderId);
+void cg_mesh_draw(Mesh* mesh, unsigned int shaderId, unsigned int numInstances);
 void cg_mesh_destroy(Mesh* mesh);
 
 // Mesh
 void cg_model_create(Model* model, const char* filePath);
 void cg_model_load(Model* model, const char* filePath);
-void cg_model_draw(Model* model, unsigned int shaderId);
+void cg_model_draw(Model* model, unsigned int shaderId, unsigned int numInstances);
 void cg_model_destroy(Model* model);
 
 // Tool

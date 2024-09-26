@@ -140,9 +140,9 @@ void cg_model_create(Model* model, const char* filePath) {
     cg_model_load(model, filePath);
 }
 
-void cg_model_draw(Model* model, unsigned int shaderId) {
+void cg_model_draw(Model* model, unsigned int shaderId, unsigned int numInstances) {
     for (unsigned int i = 0; i < arrlen(model->meshes); i++) {
-        cg_mesh_draw(&model->meshes[i], shaderId);
+        cg_mesh_draw(&model->meshes[i], shaderId, numInstances);
     }
 }
 
