@@ -12,8 +12,12 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#define CG_SCREEN_X 400
-#define CG_SCREEN_Y 400
+#include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
+
+#define CG_SCREEN_X 1920
+#define CG_SCREEN_Y 1200
 
 // Types
 #define TRUE GL_TRUE
@@ -88,11 +92,24 @@ typedef struct {
     size_t directoryLength;
 } Model;
 
-// Cube
 typedef struct {
-    vec3 vertices[2][3]; // 1 triangle
-    unsigned int VAO, VBO, EBO;
-} Cube;
+    Model body;
+    Model leftHand;
+    Model rightHand;
+} Mantaray;
+
+typedef struct {
+    vec3 position;
+    vec3 velocity;
+    float time;
+    float maxSpeed;
+    float maxForce;
+} Boid;
+
+typedef struct {
+    Boid* boid;
+    size_t size;
+} Boids;
 
 // control
 GLFWwindow* cg_control_window_create(Camera* camera, int width, int height, const char* title);
@@ -138,7 +155,22 @@ void cg_model_destroy(Model* model);
 // Tool
 void cg_tool_itoa(char* str, int n);
 
-// cube
-void cg_cube_create(Cube* cube);
+// Mantray
+void cg_mantaray_position_set(Mantaray* m, vec3 position);
+void cg_mantaray_create(Mantaray* mantray);
+void cg_mantaray_boids_draw(Mantaray* m, Boids* b, unsigned int shaderId);
+void cg_mantaray_destroy(Mantaray* mantray);
+
+// Boids
+void cg_boids_create(Boids* boids, size_t size);
+void cg_boids_destroy(Boids* boids);
+void cg_boids_initialize(Boids* b, size_t size);
+void cg_boids_rule1(Boids* b, size_t j, vec3 v);
+void cg_boids_rule2(Boids* b, size_t j, vec3 v);
+void cg_boids_rule3(Boids* b, size_t j , vec3 v);
+// Boid
+void cg_boid_velocity_limit(Boid* b);
+void cg_boid_position_bound(Boid* b, vec3 v);
+void cg_boid_position_edge(Boid* b);
 
 #endif // GRAPHICS_H 

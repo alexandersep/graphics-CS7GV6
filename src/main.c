@@ -1,5 +1,5 @@
 #include "graphics.h"
-#include <stdio.h>
+#include <cglm/mat4.h>
 
 vec3 pointLights[] = {
     { 0.7f,  0.2f,  2.0f},
@@ -45,9 +45,15 @@ int main() {
     cg_model_create(&sand, "res/models/wfc/sand/sand.obj");
     cg_model_create(&water, "res/models/wfc/water/water.obj");
 
+    Mantaray mantaray;
+    cg_mantaray_create(&mantaray);
+
+    Boids boids;
+    cg_boids_create(&boids, 25);
+
     unsigned int instances = 100;
     mat4 modelMatrices[instances];
-    srand(glfwGetTime());
+    srand(time(NULL));
     for (unsigned int i = 0; i < instances; i++) {
         mat4 model;
         glm_mat4_identity(model);
@@ -79,7 +85,7 @@ int main() {
         glm_vec3_add(camera.pos, camera.front, center);
         glm_lookat(camera.pos, center, camera.up, view);
         mat4 projection;
-        glm_perspective(glm_rad(camera.zoom), (float) CG_SCREEN_X / (float) CG_SCREEN_Y, 0.1f, 100.0f, projection);
+        glm_perspective(glm_rad(camera.zoom), (float) CG_SCREEN_X / (float) CG_SCREEN_Y, 0.1f, 1000.0f, projection);
 
         {
             //glStencilMask(0x00);
@@ -118,7 +124,7 @@ int main() {
                 cg_shader_uniform_matrix4fv(shaderId, "view", &view);
 
                 cg_shader_uniform3f(shaderId, "dirLight.direction", -0.2f, -1.0f, -0.3f);
-                cg_shader_uniform3f(shaderId, "dirLight.ambient", 0.05f, 0.05f, 0.05f);
+                cg_shader_uniform3f(shaderId, "dirLight.ambient", 0.25f, 0.25f, 0.25f);
                 cg_shader_uniform3f(shaderId, "dirLight.diffuse", 0.4f, 0.4f, 0.4f);
                 cg_shader_uniform3f(shaderId, "dirLight.specular", 0.5f, 0.5f, 0.5f);
                 cg_shader_uniform1f(shaderId, "material.shininess", 32.0f);  // Adjust shininess
@@ -144,8 +150,14 @@ int main() {
             // render the loaded model
             mat4 model;
             glm_mat4_identity(model);
+            glm_mat4_scale(model, 52);
             cg_shader_uniform_matrix4fv(shaderId, "model", &model);
             cg_model_draw(&grass, shaderId);
+
+            //cg_mantaray_draw(&mantaray, shaderId);
+            //cg_mantaray_position_set(&mantaray, (vec3){0.0f, 10.0f, 10.0f});
+            //cg_mantaray_draw(&mantaray, shaderId);
+            cg_mantaray_boids_draw(&mantaray, &boids, shaderId);
 
             // 2nd. render pass: now draw slightly scaled versions of the objects, this time disabling stencil writing.
             // Because the stencil buffer is now filled with several 1s. The parts of the buffer that are 1 are not drawn, thus only drawing
@@ -180,6 +192,9 @@ int main() {
     cg_model_destroy(&grass);
     cg_model_destroy(&water);
     cg_model_destroy(&sand);
+
+    cg_mantaray_destroy(&mantaray);
+    cg_boids_destroy(&boids);
 
     glfwTerminate();
     return 0;
