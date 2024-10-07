@@ -1,5 +1,4 @@
 #version 460 core
-out vec4 FragColor;
 
 struct Material {
     sampler2D diffuse;
@@ -44,33 +43,35 @@ struct SpotLight {
 
 #define NR_POINT_LIGHTS 4
 
+out vec4 FragColor;
+
 in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoords;
+in vec3 WorldPos;
 
 uniform vec3 viewPos;
 uniform DirLight dirLight;
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 uniform SpotLight spotLight;
 uniform Material material;
+uniform vec3 CameraPos;
+
+float fogStart = 0.0;
+float fogEnd = 100.0;
+vec3 fogColor = vec3(0.0,0.102,0.2); // deep ocean blue
 
 // function prototypes
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
+float CalcFogFactor();
 
-void main()
-{    
+void main() { 
     // properties
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
     
-    // == =====================================================
-    // Our lighting is set up in 3 phases: directional, point lights and an optional flashlight
-    // For each phase, a calculate function is defined that calculates the corresponding color
-    // per lamp. In the main() function we take all the calculated colors and sum them up for
-    // this fragment's final color.
-    // == =====================================================
     // phase 1: directional lighting
     vec3 result = CalcDirLight(dirLight, norm, viewDir);
     // phase 2: point lights
@@ -79,13 +80,18 @@ void main()
     }
     // phase 3: spot light
     result += CalcSpotLight(spotLight, norm, FragPos, viewDir);    
+
+    vec4 color = vec4(result, 1.0);
+    if (fogColor != vec3(0.0,0.0,0.0)) {
+        float fogFactor = CalcFogFactor();
+        color = mix(vec4(fogColor, 0.5), color, fogFactor);
+    }
     
-    FragColor = vec4(result, 1.0);
+    FragColor = color;
 }
 
 // calculates the color when using a directional light.
-vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
-{
+vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir) {
     vec3 lightDir = normalize(-light.direction);
     // diffuse shading
     float diff = max(dot(normal, lightDir), 0.0);
@@ -93,7 +99,6 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     // combine results
-    //vec3 diffuseColor = vec3(1.0, 1.0, 1.0); // Hardcoded white color for debugging
     vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
     vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoords));
     vec3 specular = light.specular * spec * vec3(texture(material.specular, TexCoords));
@@ -101,8 +106,7 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
 }
 
 // calculates the color when using a point light.
-vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
-{
+vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
     vec3 lightDir = normalize(light.position - fragPos);
     // diffuse shading
     float diff = max(dot(normal, lightDir), 0.0);
@@ -123,8 +127,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 }
 
 // calculates the color when using a spot light.
-vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
-{
+vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
     vec3 lightDir = normalize(light.position - fragPos);
     // diffuse shading
     float diff = max(dot(normal, lightDir), 0.0);
@@ -148,3 +151,10 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     return (ambient + diffuse + specular);
 }
 
+// calculates linear fogfactor
+float CalcFogFactor()  {
+    float FogRange = fogEnd - fogStart;
+    float FogDist = length(WorldPos - CameraPos);
+    float FogFactor = clamp(((fogEnd - FogDist) / FogRange), 0.0, 1.0);
+    return FogFactor;
+}

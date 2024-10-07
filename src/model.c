@@ -1,4 +1,5 @@
 #include "graphics.h"
+#include <assimp/postprocess.h>
 
 typedef struct aiScene aiScene;
 typedef struct aiMesh aiMesh;
@@ -114,7 +115,7 @@ static void cg_model_process_node(Model* model, aiNode* node, const aiScene* sce
 }
 
 void cg_model_load(Model* model, const char* filePath) {
-    const aiScene* scene = aiImportFile(filePath, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace);
+   const aiScene* scene = aiImportFile(filePath, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_FlipUVs);
    if (!scene) {
        fprintf(stderr, "Failed to open file using assimp: %s\n", aiGetErrorString());
    }

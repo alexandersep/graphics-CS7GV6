@@ -1,9 +1,8 @@
 #include "graphics.h"
-#include <cglm/vec3.h>
 
-static void cg_boid_initialize(Boid* b, size_t size) {
-    float x = (rand() % 50) - 25;
-    float y = (rand() % 50) - 25;
+static void cg_boid_initialize(Boid* b) {
+    float x = (rand() % 100) - 50;
+    float y = (rand() % 100) - 50;
     float z = (rand() % 20) - 10;
     glm_vec3_copy((vec3){x,-y,-z}, b->position);
 
@@ -14,15 +13,16 @@ static void cg_boid_initialize(Boid* b, size_t size) {
 
     b->time = ((float)rand() / RAND_MAX) * 2.0f * GLM_PI;
     b->maxForce = 1.0f;
-    b->maxSpeed = 0.25;
+    b->maxSpeed = 0.025f;
+    glm_quat_identity(b->orientation);
 }
 
 void cg_boids_create(Boids* boids, size_t size) {
     boids->boid = malloc(sizeof(Boid) * size);
     for (int i = 0; i < size; i++) {
-        cg_boid_initialize(&boids->boid[i], size);
-        boids->size = size;
+        cg_boid_initialize(&boids->boid[i]);
     }
+    boids->size = size;
 }
 
 // Boids try to swim towards the perceived centre of mass of neighbouring boids
@@ -162,6 +162,29 @@ void cg_boid_position_edge(Boid* b) {
     }
 }
 
+void cg_boid_angle_update(Boid* b, mat4 model, vec3 forward) {
+    vec3 normVelocity;
+    glm_vec3_normalize_to(b->velocity, normVelocity);
+
+    vec3 rotation;
+    glm_vec3_cross(forward, normVelocity, rotation);
+    glm_vec3_normalize(rotation);
+
+    float dot = glm_vec3_dot(forward, normVelocity);
+    float angle = acos(dot);
+
+    versor quaternion; // unit vector of norm one, x, y, z, w (unlike glm)
+    glm_quatv(quaternion, angle, rotation);
+
+    float slerp = 0.01f;
+    versor interpolation;
+    glm_quat_slerp(b->orientation, quaternion, slerp, interpolation);
+
+    glm_quat_mat4(interpolation, model);
+    glm_quat_copy(interpolation, b->orientation);
+}
+
+
 void cg_boids_destroy(Boids* boids) {
     free(boids->boid);
 }
@@ -170,9 +193,6 @@ void cg_boid_velocity_limit(Boid* b) {
     float vlim = b->maxSpeed;
     float magnitude = glm_vec3_norm(b->velocity);
     if (magnitude > vlim) {
-        //glm_vec3_divs(b->velocity, magnitude, b->velocity);
-        //glm_vec3_muladds(b->velocity, vlim, b->velocity);
-        // result = unit(v) * s
         glm_vec3_scale(b->velocity, vlim / magnitude, b->velocity);
     }
 }

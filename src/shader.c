@@ -97,15 +97,12 @@ void cg_shader_uniform1i(unsigned int programId, const char* name, int x) {
     glUniform1i(glGetUniformLocation(programId, name), x);
 }
 
-void cg_shader_uniform_matrix4fv(unsigned int programId, const char* name, mat4* projection) {
-    glUniformMatrix4fv(glGetUniformLocation(programId, name), 1, GL_FALSE, projection[0][0]);
+void cg_shader_uniform_matrix4fv(unsigned int programId, const char* name, mat4 projection) {
+    glUniformMatrix4fv(glGetUniformLocation(programId, name), 1, GL_FALSE, &projection[0][0]);
 }
 
 void cg_shader_uniform1f(unsigned int programId, const char* name, float x) {
     int res = glGetUniformLocation(programId, name);
-    if (res == -1) {
-        fprintf(stdout, "res uniform1f %d\n", res);
-    }
     glUniform1f(res, x);
 }
 
@@ -115,9 +112,6 @@ void cg_shader_uniform2f(unsigned int programId, const char* name, float x, floa
 
 void cg_shader_uniform3f(unsigned int programId, const char* name, float x, float y, float z) {
     int res = glGetUniformLocation(programId, name);
-    if (res == -1) {
-        fprintf(stdout, "res uniform3f %d\n", res);
-    }
     glUniform3f(res, x, y, z);
 }
 

@@ -1,5 +1,4 @@
 #include "graphics.h"
-#include <cglm/mat4.h>
 
 vec3 pointLights[] = {
     { 0.7f,  0.2f,  2.0f},
@@ -17,9 +16,20 @@ typedef struct {
 */
 
 int main() {
-    Camera camera;
-    cg_control_camera_create(&camera, 10.0f);
-    GLFWwindow* window = cg_control_window_create(&camera, CG_SCREEN_X, CG_SCREEN_Y, "Window");
+    Camera camera[2]; // top down, and movable
+    vec3 firstPersonPos = {0.0f, 0.0f, 3.0f};
+    cg_control_camera_create(&camera[0], 10.0f, firstPersonPos);
+
+    vec3 topDownPos = {0.0f, 100.0f, 0.0f};
+    cg_control_camera_create(&camera[1], 10.0f, topDownPos);
+    camera[1].angle.pitch = -89.0f;
+
+    GLFWwindow* window = cg_control_window_create(CG_SCREEN_X, CG_SCREEN_Y, "Window");
+    Cameras cameras;
+    cameras.camera = camera;
+    cameras.size = 2;
+    cameras.focus = 0;
+    glfwSetWindowUserPointer(window, &cameras); // default to first person view camera
     if (window == NULL) {
         fprintf(stderr, "Failed to open a window\n");
         glfwTerminate();
@@ -32,7 +42,7 @@ int main() {
     unsigned int shaderInstance =
         cg_shader_create("res/shaders/vertex/vs-instance.glsl", "res/shaders/fragment/fs-texture.glsl");
 
-    stbi_set_flip_vertically_on_load(TRUE);
+    //stbi_set_flip_vertically_on_load(TRUE);
 
     glEnable(GL_DEPTH_TEST);
     //glDepthFunc(GL_LESS);
@@ -47,6 +57,9 @@ int main() {
 
     Mantaray mantaray;
     cg_mantaray_create(&mantaray);
+
+    Fish fish;
+    cg_fish_create(&fish);
 
     Boids boids;
     cg_boids_create(&boids, 25);
@@ -71,6 +84,7 @@ int main() {
 
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
+
     while (!glfwWindowShouldClose(window)) {
         float currentFrame = glfwGetTime();
         float deltaTime = currentFrame - lastFrame;
@@ -82,10 +96,10 @@ int main() {
 
         mat4 view;
         vec3 center;
-        glm_vec3_add(camera.pos, camera.front, center);
-        glm_lookat(camera.pos, center, camera.up, view);
+        glm_vec3_add(cameras.camera[cameras.focus].pos, cameras.camera[cameras.focus].front, center);
+        glm_lookat(cameras.camera[cameras.focus].pos, center, cameras.camera[cameras.focus].up, view);
         mat4 projection;
-        glm_perspective(glm_rad(camera.zoom), (float) CG_SCREEN_X / (float) CG_SCREEN_Y, 0.1f, 1000.0f, projection);
+        glm_perspective(glm_rad(cameras.camera[cameras.focus].zoom), (float) CG_SCREEN_X / (float) CG_SCREEN_Y, 0.1f, 1000.0f, projection);
 
         {
             //glStencilMask(0x00);
@@ -93,8 +107,8 @@ int main() {
 
             cg_shader_use(shaderInstance);
             {
-                cg_shader_uniform_matrix4fv(shaderInstance, "projection", &projection);
-                cg_shader_uniform_matrix4fv(shaderInstance, "view", &view);
+                cg_shader_uniform_matrix4fv(shaderInstance, "projection", projection);
+                cg_shader_uniform_matrix4fv(shaderInstance, "view", view);
 
                 cg_shader_uniform3f(shaderInstance, "dirLight.direction", -0.2f, -1.0f, -0.3f);
                 cg_shader_uniform3f(shaderInstance, "dirLight.ambient", 0.05f, 0.05f, 0.05f);
@@ -104,8 +118,8 @@ int main() {
 
                 cg_shader_light_pointLights(shaderInstance, pointLights, 4);
 
-                cg_shader_uniform3f(shaderInstance, "spotLight.position", camera.pos[0], camera.pos[1], camera.pos[2]);
-                cg_shader_uniform3f(shaderInstance, "spotLight.direction", camera.front[0], camera.front[1], camera.front[2]);
+                cg_shader_uniform3f(shaderInstance, "spotLight.position", cameras.camera[cameras.focus].pos[0], cameras.camera[cameras.focus].pos[1], cameras.camera[cameras.focus].pos[2]);
+                cg_shader_uniform3f(shaderInstance, "spotLight.direction", cameras.camera[cameras.focus].front[0], cameras.camera[cameras.focus].front[1], cameras.camera[cameras.focus].front[2]);
                 cg_shader_uniform3f(shaderInstance, "spotLight.ambient", 0.0f, 0.0f, 0.0f);
                 cg_shader_uniform3f(shaderInstance, "spotLight.diffuse", 1.0f, 1.0f, 1.0f);
                 cg_shader_uniform3f(shaderInstance, "spotLight.specular", 1.0f, 1.0f, 1.0f);
@@ -120,8 +134,8 @@ int main() {
 
             cg_shader_use(shaderId);
             {
-                cg_shader_uniform_matrix4fv(shaderId, "projection", &projection);
-                cg_shader_uniform_matrix4fv(shaderId, "view", &view);
+                cg_shader_uniform_matrix4fv(shaderId, "projection", projection);
+                cg_shader_uniform_matrix4fv(shaderId, "view", view);
 
                 cg_shader_uniform3f(shaderId, "dirLight.direction", -0.2f, -1.0f, -0.3f);
                 cg_shader_uniform3f(shaderId, "dirLight.ambient", 0.25f, 0.25f, 0.25f);
@@ -131,8 +145,8 @@ int main() {
 
                 cg_shader_light_pointLights(shaderId, pointLights, 4);
 
-                cg_shader_uniform3f(shaderId, "spotLight.position", camera.pos[0], camera.pos[1], camera.pos[2]);
-                cg_shader_uniform3f(shaderId, "spotLight.direction", camera.front[0], camera.front[1], camera.front[2]);
+                cg_shader_uniform3f(shaderId, "spotLight.position", cameras.camera[cameras.focus].pos[0], cameras.camera[cameras.focus].pos[1], cameras.camera[cameras.focus].pos[2]);
+                cg_shader_uniform3f(shaderId, "spotLight.direction", cameras.camera[cameras.focus].front[0], cameras.camera[cameras.focus].front[1], cameras.camera[cameras.focus].front[2]);
                 cg_shader_uniform3f(shaderId, "spotLight.ambient", 0.0f, 0.0f, 0.0f);
                 cg_shader_uniform3f(shaderId, "spotLight.diffuse", 1.0f, 1.0f, 1.0f);
                 cg_shader_uniform3f(shaderId, "spotLight.specular", 1.0f, 1.0f, 1.0f);
@@ -141,6 +155,8 @@ int main() {
                 cg_shader_uniform1f(shaderId, "spotLight.quadratic", 0.032f);
                 cg_shader_uniform1f(shaderId, "spotLight.cutOff", cos(glm_rad(12.5f)));
                 cg_shader_uniform1f(shaderId, "spotLight.outerCutOff", cos(glm_rad(17.5f)));
+
+                cg_shader_uniform3f(shaderId, "CameraPos", cameras.camera[cameras.focus].pos[0], cameras.camera[cameras.focus].pos[1], cameras.camera[cameras.focus].pos[2]);
             }
 
             // 1st. render pass, draw objects as normal, writing to the stencil buffer
@@ -151,13 +167,18 @@ int main() {
             mat4 model;
             glm_mat4_identity(model);
             glm_mat4_scale(model, 52);
-            cg_shader_uniform_matrix4fv(shaderId, "model", &model);
+            cg_shader_uniform_matrix4fv(shaderId, "model", model);
             cg_model_draw(&grass, shaderId);
+
+            //glm_mat4_identity(model);
+            //glm_scale(model, (vec3){0.1f, 0.1f, 0.25f});
+            //cg_shader_uniform_matrix4fv(shaderId, "model", model);
+            //cg_model_draw(&fish, shaderId);
 
             //cg_mantaray_draw(&mantaray, shaderId);
             //cg_mantaray_position_set(&mantaray, (vec3){0.0f, 10.0f, 10.0f});
             //cg_mantaray_draw(&mantaray, shaderId);
-            cg_mantaray_boids_draw(&mantaray, &boids, shaderId);
+            cg_mantaray_boids_draw(&mantaray, &fish, &boids, shaderId);
 
             // 2nd. render pass: now draw slightly scaled versions of the objects, this time disabling stencil writing.
             // Because the stencil buffer is now filled with several 1s. The parts of the buffer that are 1 are not drawn, thus only drawing
@@ -192,6 +213,7 @@ int main() {
     cg_model_destroy(&grass);
     cg_model_destroy(&water);
     cg_model_destroy(&sand);
+    cg_fish_destroy(&fish);
 
     cg_mantaray_destroy(&mantaray);
     cg_boids_destroy(&boids);

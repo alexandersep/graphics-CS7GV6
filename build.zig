@@ -58,4 +58,5 @@ const generic_source_files = [_][]const u8{
     "src/model.c",
     "src/mantaray.c",
     "src/boids.c",
+    "src/fish.c",
 };

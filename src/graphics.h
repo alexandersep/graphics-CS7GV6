@@ -1,6 +1,7 @@
 #ifndef GRAPHICS_H 
 #define GRAPHICS_H 
 
+#include <stdalign.h>
 #define GLFW_INCLUDE_NONE
 #include "glad/glad.h"
 #include "stb_image.h"
@@ -53,17 +54,23 @@ typedef struct {
 } Mouse;
 
 typedef struct {
-    float speed;
-    float zoom;
-    EulerAngle angle;
-    Mouse mouse;
     vec3 pos;
     vec3 front;
     vec3 up;
     vec3 right;
     vec3 worldup;
+    float speed;
+    float zoom;
+    Mouse mouse;
+    EulerAngle angle;
     float deltaTime;
 } Camera;
+
+typedef struct {
+    Camera* camera; // a list of cameras
+    size_t focus;
+    size_t size;
+} Cameras;
 
 typedef struct {
     vec3 position;
@@ -94,6 +101,11 @@ typedef struct {
 
 typedef struct {
     Model body;
+    Model tail;
+} Fish;
+
+typedef struct {
+    Model body;
     Model leftHand;
     Model rightHand;
 } Mantaray;
@@ -104,6 +116,7 @@ typedef struct {
     float time;
     float maxSpeed;
     float maxForce;
+    versor orientation;
 } Boid;
 
 typedef struct {
@@ -112,9 +125,10 @@ typedef struct {
 } Boids;
 
 // control
-GLFWwindow* cg_control_window_create(Camera* camera, int width, int height, const char* title);
-void cg_control_camera_create(Camera* camera, float speed);
+GLFWwindow* cg_control_window_create(int width, int height, const char* title);
+void cg_control_camera_create(Camera* camera, float speed, vec3 pos);
 void cg_control_camera_move(GLFWwindow* window, float deltaTime);
+void cg_control_angle_update(EulerAngle* angle, vec3 front, vec3 worldup, vec3 right, vec3 up);
 
 // Shader
 unsigned int cg_shader_create(const char* vertexPath, const char* fragmentPath);
@@ -125,7 +139,7 @@ void cg_shader_uniform3i(unsigned int programId, const char* name, int x, int y,
 void cg_shader_uniform1f(unsigned int programId, const char* name, float x);
 void cg_shader_uniform2f(unsigned int programId, const char* name, float x, float y);
 void cg_shader_uniform3f(unsigned int programId, const char* name, float x, float y, float z);
-void cg_shader_uniform_matrix4fv(unsigned int programId, const char* name, mat4* projection);
+void cg_shader_uniform_matrix4fv(unsigned int programId, const char* name, mat4 projection);
 void cg_shader_light_pointLights(unsigned int programId, vec3* points, unsigned int size);
 void cg_shader_destroy(unsigned int programId);
 
@@ -158,8 +172,13 @@ void cg_tool_itoa(char* str, int n);
 // Mantray
 void cg_mantaray_position_set(Mantaray* m, vec3 position);
 void cg_mantaray_create(Mantaray* mantray);
-void cg_mantaray_boids_draw(Mantaray* m, Boids* b, unsigned int shaderId);
+void cg_mantaray_boids_draw(Mantaray* m, Fish* fish, Boids* b, unsigned int shaderId);
 void cg_mantaray_destroy(Mantaray* mantray);
+
+// Fish
+void cg_fish_create(Fish* f);
+void cg_fish_model_draw(Fish* f, Boid* b, unsigned int shaderId);
+void cg_fish_destroy(Fish* f);
 
 // Boids
 void cg_boids_create(Boids* boids, size_t size);
@@ -172,5 +191,7 @@ void cg_boids_rule3(Boids* b, size_t j , vec3 v);
 void cg_boid_velocity_limit(Boid* b);
 void cg_boid_position_bound(Boid* b, vec3 v);
 void cg_boid_position_edge(Boid* b);
+void cg_boid_angle_update(Boid* b, mat4 model, vec3 forward);
+
 
 #endif // GRAPHICS_H 

@@ -9,17 +9,19 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    Camera* camera = glfwGetWindowUserPointer(window);
-    camera->zoom -= yoffset;
-    if (camera->zoom < 1.0f) {
-        camera->zoom = 1.0f;
+    Camera** camera = glfwGetWindowUserPointer(window);
+    camera[0]->zoom -= yoffset;
+    if (camera[0]->zoom < 1.0f) {
+        camera[0]->zoom = 1.0f;
     }
-    if (camera->zoom > 45.0f) {
-        camera->zoom = 45.0f;
+    if (camera[0]->zoom > 45.0f) {
+        camera[0]->zoom = 45.0f;
     }
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    Cameras* cameras = glfwGetWindowUserPointer(window);
+
     static int isPolyMode = 0;
     if (key == GLFW_KEY_P && action == GLFW_RELEASE) {
         if (!isPolyMode) {
@@ -30,10 +32,27 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
             isPolyMode = 0;
         }
     }
+    if (key == GLFW_KEY_C && action == GLFW_RELEASE) {
+        Camera* previousCamera = &cameras->camera[cameras->focus];
+        if (cameras->focus == 0) {
+            cameras->focus = 1;
+        } else { // if (cameraFocus == 1) 
+            cameras->focus = 0;
+        }
+        Camera* camera = &cameras->camera[cameras->focus];
+        //camera->angle = previousCamera->angle; // don't copy angles of previous camera
+        camera->mouse = previousCamera->mouse;
+        glm_vec3_copy(previousCamera->front, camera->front);
+        glm_vec3_copy(previousCamera->up, camera->up);
+        glm_vec3_copy(previousCamera->right, camera->right);
+        glm_vec3_copy(previousCamera->worldup, camera->worldup);
+        cg_control_angle_update(&camera->angle, camera->front, camera->worldup, camera->up, camera->right);
+    }
 }
 
 void cg_control_camera_move(GLFWwindow* window, float deltaTime) {
-    Camera* camera = glfwGetWindowUserPointer(window);
+    Cameras* cameras = glfwGetWindowUserPointer(window);
+    Camera* camera = &cameras->camera[cameras->focus];
 
     float velocity = camera->speed * deltaTime;
     if (glfwGetKey(window, CLOSE1) || glfwGetKey(window, CLOSE2) == GLFW_PRESS) {
@@ -66,22 +85,23 @@ void cg_control_camera_move(GLFWwindow* window, float deltaTime) {
     }
 }
 
-static void cg_control_camera_update(Camera* camera) {
-    vec3 front;
-    front[0] = cos(glm_rad(camera->angle.yaw)) * cos(glm_rad(camera->angle.pitch));
-    front[1] = sin(glm_rad(camera->angle.pitch));
-    front[2] = sin(glm_rad(camera->angle.yaw)) * cos(glm_rad(camera->angle.pitch));
-    glm_normalize_to(front, camera->front);
+void cg_control_angle_update(EulerAngle* angle, vec3 front, vec3 worldup, vec3 up, vec3 right) {
+    front[0] = cos(glm_rad(angle->yaw)) * cos(glm_rad(angle->pitch));
+    front[1] = sin(glm_rad(angle->pitch));
+    front[2] = sin(glm_rad(angle->yaw)) * cos(glm_rad(angle->pitch));
+    glm_normalize(front);
 
-    glm_vec3_cross(front, camera->worldup, camera->right);
-    glm_normalize(camera->right);
+    glm_vec3_cross(front, worldup, right);
+    glm_normalize(right);
 
-    glm_vec3_cross(camera->right, camera->front, camera->up);
-    glm_normalize(camera->up);
+    glm_vec3_cross(right, front, up);
+    glm_normalize(up);
 }
 
 static void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
-    Camera* camera = glfwGetWindowUserPointer(window);
+    Cameras* cameras = glfwGetWindowUserPointer(window);
+    Camera* camera = &cameras->camera[cameras->focus];
+
     float xpos = xposIn;
     float ypos = yposIn;
     if (!camera->mouse.focus) {
@@ -107,10 +127,10 @@ static void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
     if (camera->angle.pitch < -89.0f) {
         camera->angle.pitch = -89.0f;
     }
-    cg_control_camera_update(camera);
+    cg_control_angle_update(&camera->angle, camera->front, camera->worldup, camera->up, camera->right);
 }
 
-GLFWwindow* cg_control_window_create(Camera* camera, int width, int height, const char* title) {
+GLFWwindow* cg_control_window_create(int width, int height, const char* title) {
     if (glfwInit() == FALSE) {
         int error = glfwGetError(NULL);
         fprintf(stderr, "GLFW error: %d\n", error);
@@ -130,7 +150,6 @@ GLFWwindow* cg_control_window_create(Camera* camera, int width, int height, cons
     glfwSetKeyCallback(window, key_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
-    glfwSetWindowUserPointer(window, camera);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -144,8 +163,7 @@ GLFWwindow* cg_control_window_create(Camera* camera, int width, int height, cons
     return window;
 }
 
-void cg_control_camera_create(Camera* camera, float speed) {
-    vec3 pos = {0.0f, 0.0f, 3.0f};
+void cg_control_camera_create(Camera* camera, float speed, vec3 pos) {
     vec3 up = {0.0f, 1.0f, 0.0f};
     vec3 front = {0.0f, 0.0f, -1.0f};
     glm_vec3_copy(pos, camera->pos);
@@ -159,5 +177,5 @@ void cg_control_camera_create(Camera* camera, float speed) {
     camera->mouse.ypos = CG_SCREEN_Y / 2.0;
     camera->mouse.focus = 0;
     camera->mouse.sensitivity = 0.1f;
-    cg_control_camera_update(camera);
+    cg_control_angle_update(&camera->angle, camera->front, camera->worldup, camera->up, camera->right);
 }
