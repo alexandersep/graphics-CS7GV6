@@ -3,7 +3,7 @@
 static void cg_boid_initialize(Boid* b) {
     float x = (rand() % 100) - 50;
     float y = (rand() % 100) - 50;
-    float z = (rand() % 20) - 10;
+    float z = (rand() % 100) - 50;
     glm_vec3_copy((vec3){x,-y,-z}, b->position);
 
     x = (rand() % 50) - 25;

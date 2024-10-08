@@ -16,6 +16,7 @@ typedef struct {
 */
 
 int main() {
+    srand(time(NULL));
     Camera camera[2]; // top down, and movable
     vec3 firstPersonPos = {0.0f, 0.0f, 3.0f};
     cg_control_camera_create(&camera[0], 10.0f, firstPersonPos);
@@ -42,6 +43,9 @@ int main() {
     unsigned int shaderInstance =
         cg_shader_create("res/shaders/vertex/vs-instance.glsl", "res/shaders/fragment/fs-texture.glsl");
 
+    unsigned int shaderMarines =
+        cg_shader_create("res/shaders/vertex/vs-instance.glsl", "res/shaders/fragment/fs-texture.glsl");
+
     //stbi_set_flip_vertically_on_load(TRUE);
 
     glEnable(GL_DEPTH_TEST);
@@ -50,10 +54,21 @@ int main() {
     //glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
     //glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
-    Model grass, sand, water;
+    Model grass, sand, water, coconut, coconutTree;
     cg_model_create(&grass, "res/models/wfc/grass/grass.obj");
     cg_model_create(&sand, "res/models/wfc/sand/sand.obj");
     cg_model_create(&water, "res/models/wfc/water/water.obj");
+    cg_model_create(&coconut, "res/models/coconut/coconut.obj");
+    cg_model_create(&coconutTree, "res/models/coconut-tree/coconut-tree.obj");
+
+    GenericModel starfish;
+    size_t size = 50;
+    mat4 models[size];
+    cg_starfish_positions(models, size);
+    cg_generic_model_create(&starfish, "res/models/starfish/starfish.obj", models, size);
+
+    Boids boids;
+    cg_boids_create(&boids, 101);
 
     Mantaray mantaray;
     cg_mantaray_create(&mantaray);
@@ -61,12 +76,8 @@ int main() {
     Fish fish;
     cg_fish_create(&fish);
 
-    Boids boids;
-    cg_boids_create(&boids, 25);
-
     unsigned int instances = 100;
     mat4 modelMatrices[instances];
-    srand(time(NULL));
     for (unsigned int i = 0; i < instances; i++) {
         mat4 model;
         glm_mat4_identity(model);
@@ -170,6 +181,43 @@ int main() {
             cg_shader_uniform_matrix4fv(shaderId, "model", model);
             cg_model_draw(&grass, shaderId);
 
+            glm_mat4_identity(model);
+            cg_shader_uniform_matrix4fv(shaderId, "model", model);
+            cg_model_draw(&coconut, shaderId);
+
+            glm_mat4_identity(model);
+            cg_model_draw(&coconutTree, shaderId);
+
+            cg_shader_use(shaderMarines);
+            {
+                cg_shader_uniform_matrix4fv(shaderMarines, "projection", projection);
+                cg_shader_uniform_matrix4fv(shaderMarines, "view", view);
+
+                cg_shader_uniform3f(shaderMarines, "dirLight.direction", -0.2f, -1.0f, -0.3f);
+                cg_shader_uniform3f(shaderMarines, "dirLight.ambient", 0.25f, 0.25f, 0.25f);
+                cg_shader_uniform3f(shaderMarines, "dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+                cg_shader_uniform3f(shaderMarines, "dirLight.specular", 0.5f, 0.5f, 0.5f);
+                cg_shader_uniform1f(shaderMarines, "material.shininess", 32.0f);  // Adjust shininess
+
+                cg_shader_light_pointLights(shaderMarines, pointLights, 4);
+
+                cg_shader_uniform3f(shaderMarines, "spotLight.position", cameras.camera[cameras.focus].pos[0], cameras.camera[cameras.focus].pos[1], cameras.camera[cameras.focus].pos[2]);
+                cg_shader_uniform3f(shaderMarines, "spotLight.direction", cameras.camera[cameras.focus].front[0], cameras.camera[cameras.focus].front[1], cameras.camera[cameras.focus].front[2]);
+                cg_shader_uniform3f(shaderMarines, "spotLight.ambient", 0.0f, 0.0f, 0.0f);
+                cg_shader_uniform3f(shaderMarines, "spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+                cg_shader_uniform3f(shaderMarines, "spotLight.specular", 1.0f, 1.0f, 1.0f);
+                cg_shader_uniform1f(shaderMarines, "spotLight.constant", 1.0f);
+                cg_shader_uniform1f(shaderMarines, "spotLight.linear", 0.09f);
+                cg_shader_uniform1f(shaderMarines, "spotLight.quadratic", 0.032f);
+                cg_shader_uniform1f(shaderMarines, "spotLight.cutOff", cos(glm_rad(12.5f)));
+                cg_shader_uniform1f(shaderMarines, "spotLight.outerCutOff", cos(glm_rad(17.5f)));
+
+                cg_shader_uniform3f(shaderMarines, "CameraPos", cameras.camera[cameras.focus].pos[0], cameras.camera[cameras.focus].pos[1], cameras.camera[cameras.focus].pos[2]);
+            }
+
+            cg_mantaray_boids_draw(&mantaray, &fish, &boids, shaderMarines);
+            cg_generic_model_instance_draw(&starfish, shaderMarines, models, size);
+
             //glm_mat4_identity(model);
             //glm_scale(model, (vec3){0.1f, 0.1f, 0.25f});
             //cg_shader_uniform_matrix4fv(shaderId, "model", model);
@@ -178,7 +226,6 @@ int main() {
             //cg_mantaray_draw(&mantaray, shaderId);
             //cg_mantaray_position_set(&mantaray, (vec3){0.0f, 10.0f, 10.0f});
             //cg_mantaray_draw(&mantaray, shaderId);
-            cg_mantaray_boids_draw(&mantaray, &fish, &boids, shaderId);
 
             // 2nd. render pass: now draw slightly scaled versions of the objects, this time disabling stencil writing.
             // Because the stencil buffer is now filled with several 1s. The parts of the buffer that are 1 are not drawn, thus only drawing
@@ -209,13 +256,18 @@ int main() {
     cg_shader_destroy(shaderId);
     cg_shader_destroy(shaderLight);
     cg_shader_destroy(shaderInstance);
+    cg_shader_destroy(shaderMarines);
 
     cg_model_destroy(&grass);
     cg_model_destroy(&water);
     cg_model_destroy(&sand);
-    cg_fish_destroy(&fish);
+    cg_model_destroy(&coconut);
+    cg_model_destroy(&coconutTree);
+    cg_generic_model_destroy(&starfish);
 
+    cg_fish_destroy(&fish);
     cg_mantaray_destroy(&mantaray);
+
     cg_boids_destroy(&boids);
 
     glfwTerminate();

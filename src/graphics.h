@@ -102,12 +102,25 @@ typedef struct {
 typedef struct {
     Model body;
     Model tail;
+
+    unsigned int bufferBody;
+    unsigned int bufferTail;
 } Fish;
+
+typedef struct {
+    Model body;
+    size_t size;
+    unsigned int bufferBody;
+} GenericModel;
 
 typedef struct {
     Model body;
     Model leftHand;
     Model rightHand;
+
+    unsigned int bufferBody;
+    unsigned int bufferLeftHand;
+    unsigned int bufferRightHand;
 } Mantaray;
 
 typedef struct {
@@ -169,17 +182,6 @@ void cg_model_destroy(Model* model);
 // Tool
 void cg_tool_itoa(char* str, int n);
 
-// Mantray
-void cg_mantaray_position_set(Mantaray* m, vec3 position);
-void cg_mantaray_create(Mantaray* mantray);
-void cg_mantaray_boids_draw(Mantaray* m, Fish* fish, Boids* b, unsigned int shaderId);
-void cg_mantaray_destroy(Mantaray* mantray);
-
-// Fish
-void cg_fish_create(Fish* f);
-void cg_fish_model_draw(Fish* f, Boid* b, unsigned int shaderId);
-void cg_fish_destroy(Fish* f);
-
 // Boids
 void cg_boids_create(Boids* boids, size_t size);
 void cg_boids_destroy(Boids* boids);
@@ -192,6 +194,26 @@ void cg_boid_velocity_limit(Boid* b);
 void cg_boid_position_bound(Boid* b, vec3 v);
 void cg_boid_position_edge(Boid* b);
 void cg_boid_angle_update(Boid* b, mat4 model, vec3 forward);
+
+// Mantray
+void cg_mantaray_position_set(Mantaray* m, vec3 position);
+void cg_mantaray_create(Mantaray* m);
+void cg_mantaray_boids_draw(Mantaray* m, Fish* fish, Boids* b, unsigned int shaderId);
+void cg_mantaray_destroy(Mantaray* mantray);
+
+// Fish
+void cg_fish_create(Fish* f);
+void cg_fish_model_draw(Fish* f, Boid* b, unsigned int shaderId);
+void cg_fish_models_instance_draw(Fish* fish, unsigned int shaderId, Boids* b);
+void cg_fish_destroy(Fish* f);
+// Starfish
+void cg_starfish_positions(mat4* models, size_t size);
+
+// Generic Model
+void cg_generic_model_create(GenericModel* g, const char* filePath, mat4* models, size_t size);
+void cg_generic_model_instance_draw(GenericModel* g, unsigned int shaderId, mat4* models, size_t size);
+//void cg_generic_model_instance_draw(GenericModel* g, unsigned int shaderId);
+void cg_generic_model_destroy(GenericModel* g);
 
 
 #endif // GRAPHICS_H 

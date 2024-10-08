@@ -1,5 +1,4 @@
 #include "graphics.h"
-#include <assimp/postprocess.h>
 
 typedef struct aiScene aiScene;
 typedef struct aiMesh aiMesh;
@@ -164,4 +163,29 @@ void cg_model_destroy(Model* model) {
     }
     arrfree(model->meshes);
     arrfree(model->texturesLoaded);
+}
+
+void cg_generic_model_create(GenericModel* g, const char* filePath, mat4* models, size_t size) {
+    cg_model_create(&g->body, filePath);
+
+    unsigned int buffers;
+    glGenBuffers(1, &buffers);
+    g->bufferBody = buffers;
+    g->size = size;
+
+}
+
+void cg_generic_model_instance_draw(GenericModel* g, unsigned int shaderId, mat4* models, size_t size) {
+    glBindBuffer(GL_ARRAY_BUFFER, g->bufferBody);
+    glBufferData(GL_ARRAY_BUFFER, size * sizeof(mat4), &models[0], GL_STATIC_DRAW);
+
+    cg_model_instance_setup(&g->body);
+
+    cg_model_instance_draw(&g->body, shaderId, g->size);
+}
+
+void cg_generic_model_destroy(GenericModel* g) {
+    cg_model_destroy(&g->body);
+
+    glDeleteBuffers(1, &g->bufferBody); // body is the start of buffer of length 2
 }
