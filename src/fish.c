@@ -30,7 +30,7 @@ void cg_fish_model_draw(Fish* f, Boid* b, unsigned int shaderId) {
 }
 
 void cg_fish_models_instance_draw(Fish* fish, unsigned int shaderId, Boids* boids) {
-    size_t size = (boids->size / 2) - 1;
+    size_t size = (boids->size / 2);
     mat4 modelBody[size];
     mat4 modelTail[size];
     vec3 forward = {1.0f, 0.0f, 0.0f};  // The fish model faces positive x axis
