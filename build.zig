@@ -59,4 +59,9 @@ const generic_source_files = [_][]const u8{
     "src/mantaray.c",
     "src/boids.c",
     "src/fish.c",
+    "src/cubemap.c",
+    "src/framebuffer.c",
+    "src/renderbuffer.c",
+    "src/screen.c",
+    "src/transparent.c",
 };

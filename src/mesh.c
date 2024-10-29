@@ -70,7 +70,7 @@ void cg_mesh_create(Mesh* mesh, Vertex* vertices, unsigned int* indices, Texture
     cg_mesh_setup(mesh);
 }
 
-static void cg_mesh_texture_bind(Mesh* mesh, unsigned int shaderId) {
+void cg_mesh_texture_bind(Mesh* mesh, unsigned int shaderId) {
     unsigned int diffuse = 1;
     unsigned int specular = 1;
     unsigned int normal = 1;

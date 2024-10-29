@@ -34,9 +34,7 @@ static void cg_model_load_material_textures(Model* model, Texture** textures, ai
             }
             filePath[i + directoryLen] = '\0';
             
-            unsigned int textureId = cg_texture_load(filePath);
-
-            texture.id = textureId;
+            cg_texture_create(&texture, filePath);
             texture.type = typeName;
             strncpy(texture.path, str.data, str.length + 1);
             arrput(*textures, texture);
@@ -162,6 +160,9 @@ void cg_model_destroy(Model* model) {
         cg_mesh_destroy(&model->meshes[i]);
     }
     arrfree(model->meshes);
+    for (unsigned int i = 0; i < arrlen(model->texturesLoaded); i++) {
+        cg_texture_destroy(&model->texturesLoaded[i]);
+    }
     arrfree(model->texturesLoaded);
 }
 
@@ -172,7 +173,6 @@ void cg_generic_model_create(GenericModel* g, const char* filePath, mat4* models
     glGenBuffers(1, &buffers);
     g->bufferBody = buffers;
     g->size = size;
-
 }
 
 void cg_generic_model_instance_draw(GenericModel* g, unsigned int shaderId, mat4* models, size_t size) {
@@ -188,4 +188,17 @@ void cg_generic_model_destroy(GenericModel* g) {
     cg_model_destroy(&g->body);
 
     glDeleteBuffers(1, &g->bufferBody); // body is the start of buffer of length 2
+}
+
+void cg_generic_model_positions(mat4* models, size_t size) {
+    float radius = 5.0f;
+    float scaling = 20;
+    for (size_t i = 0; i < size; i++) {
+        mat4 model;
+        glm_mat4_identity(model);
+        glm_mat4_scale(model, scaling);
+        vec3 position = { ( (rand() % 100) - 50.0f) / scaling, (-51.0f) / scaling, ( (rand() % 100) - 50.0f ) / scaling};
+        glm_translate(model, position);
+        glm_mat4_copy(model, models[i]);
+    }
 }

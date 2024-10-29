@@ -2,8 +2,12 @@
 
 void cg_mantaray_create(Mantaray* m) {
     cg_model_create(&m->body, "res/models/man/body/body.obj");
-    cg_model_create(&m->leftHand, "res/models/man/left-hand/left-hand.obj");
-    cg_model_create(&m->rightHand, "res/models/man/right-hand/right-hand.obj");
+
+    cg_model_create(&m->leftHandOne, "res/models/man/left-hand/one/one.obj");
+    cg_model_create(&m->rightHandOne, "res/models/man/right-hand/one/one.obj");
+
+    cg_model_create(&m->leftHandTwo, "res/models/man/left-hand/two/two.obj");
+    cg_model_create(&m->rightHandTwo, "res/models/man/right-hand/two/two.obj");
 
     unsigned int buffers[3];
     glGenBuffers(3, buffers);
@@ -16,8 +20,13 @@ static void cg_mantaray_models_instance_draw(Mantaray* m, unsigned int shaderId,
 
     size_t size = (boids->size / 2) + 1;
     mat4 modelBody[size];
-    mat4 modelLeftHand[size];
-    mat4 modelRightHand[size];
+
+    mat4 modelLeftHandOne[size];
+    mat4 modelRightHandOne[size];
+
+    mat4 modelLeftHandTwo[size];
+    mat4 modelRightHandTwo[size];
+
     for (size_t i = 0, j = 0; i < boids->size; i+=2, j++) {
         glm_mat4_identity(modelBody[j]);
 
@@ -31,18 +40,24 @@ static void cg_mantaray_models_instance_draw(Mantaray* m, unsigned int shaderId,
         float degrees = 10.0f;
         float angle = degrees * sin(time + boids->boid[i].time);
 
-        glm_mat4_identity(modelLeftHand[j]);
+        glm_mat4_identity(modelLeftHandOne[j]);
 
-        glm_translate(modelLeftHand[j], boids->boid[i].position);
-        glm_mat4_mul(modelLeftHand[j], rotation, modelLeftHand[j]);
-        glm_rotate(modelLeftHand[j], glm_rad(angle), (vec3) {0.0f, 0.0f, 1.0f});
+        glm_mat4_mul(modelBody[j], modelLeftHandOne[j], modelLeftHandOne[j]);
+        glm_rotate(modelLeftHandOne[j], glm_rad(angle), (vec3) {0.0f, 0.0f, 1.0f});
 
-        glm_mat4_identity(modelRightHand[j]);
+        glm_mat4_identity(modelLeftHandTwo[j]);
+        glm_mat4_mul(modelLeftHandOne[j], modelLeftHandTwo[j], modelLeftHandTwo[j]);
+        glm_rotate(modelLeftHandTwo[j], glm_rad(angle / 10), (vec3) {0.0f, 0.0f, 1.0f});
 
-        glm_translate(modelRightHand[j], boids->boid[i].position);
-        glm_mat4_mul(modelRightHand[j], rotation, modelRightHand[j]);
-        glm_rotate(modelRightHand[j], glm_rad(angle), (vec3) {0.0f, 0.0f, -1.0f});
-    }
+        glm_mat4_identity(modelRightHandOne[j]);
+
+        glm_mat4_mul(modelBody[j], modelRightHandOne[j], modelRightHandOne[j]);
+        glm_rotate(modelRightHandOne[j], glm_rad(angle), (vec3) {0.0f, 0.0f, -1.0f});
+
+        glm_mat4_identity(modelRightHandTwo[j]);
+        glm_mat4_mul(modelRightHandOne[j], modelRightHandTwo[j], modelRightHandTwo[j]);
+        glm_rotate(modelRightHandTwo[j], glm_rad(angle / 10), (vec3) {0.0f, 0.0f, -1.0f});
+   }
 
     glBindBuffer(GL_ARRAY_BUFFER, m->bufferBody);
     glBufferData(GL_ARRAY_BUFFER, size * sizeof(mat4), &modelBody[0], GL_DYNAMIC_DRAW);
@@ -50,15 +65,24 @@ static void cg_mantaray_models_instance_draw(Mantaray* m, unsigned int shaderId,
     cg_model_instance_draw(&m->body, shaderId, size);
 
     glBindBuffer(GL_ARRAY_BUFFER, m->bufferLeftHand);
-    glBufferData(GL_ARRAY_BUFFER, size * sizeof(mat4), &modelLeftHand[0], GL_DYNAMIC_DRAW);
-    cg_model_instance_setup(&m->leftHand);
-    cg_model_instance_draw(&m->leftHand, shaderId, size);
+    glBufferData(GL_ARRAY_BUFFER, size * sizeof(mat4), &modelLeftHandOne[0], GL_DYNAMIC_DRAW);
+    cg_model_instance_setup(&m->leftHandOne);
+    cg_model_instance_draw(&m->leftHandOne, shaderId, size);
+
+    glBindBuffer(GL_ARRAY_BUFFER, m->bufferLeftHand);
+    glBufferData(GL_ARRAY_BUFFER, size * sizeof(mat4), &modelLeftHandTwo[0], GL_DYNAMIC_DRAW);
+    cg_model_instance_setup(&m->leftHandTwo);
+    cg_model_instance_draw(&m->leftHandTwo, shaderId, size);
 
     glBindBuffer(GL_ARRAY_BUFFER, m->bufferRightHand);
-    glBufferData(GL_ARRAY_BUFFER, size * sizeof(mat4), &modelRightHand[0], GL_DYNAMIC_DRAW);
-    
-    cg_model_instance_setup(&m->rightHand);
-    cg_model_instance_draw(&m->rightHand, shaderId, size);
+    glBufferData(GL_ARRAY_BUFFER, size * sizeof(mat4), &modelRightHandOne[0], GL_DYNAMIC_DRAW);
+    cg_model_instance_setup(&m->rightHandOne);
+    cg_model_instance_draw(&m->rightHandOne, shaderId, size);
+
+    glBindBuffer(GL_ARRAY_BUFFER, m->bufferRightHand);
+    glBufferData(GL_ARRAY_BUFFER, size * sizeof(mat4), &modelRightHandTwo[0], GL_DYNAMIC_DRAW);
+    cg_model_instance_setup(&m->rightHandTwo);
+    cg_model_instance_draw(&m->rightHandTwo, shaderId, size);
 }
 
 static void cg_mantaray_models_draw(Mantaray* m, unsigned int shaderId, Boid* b, float angle) {
@@ -75,7 +99,7 @@ static void cg_mantaray_models_draw(Mantaray* m, unsigned int shaderId, Boid* b,
     cg_shader_uniform_matrix4fv(shaderId, "model", model);
     cg_model_draw(&m->body, shaderId);
 
-    Model models[] = {m->leftHand, m->rightHand};
+    Model models[] = {m->leftHandOne, m->rightHandOne};
     int zRotation = 1.0f;
     for (size_t i = 0; i < 2; i++) {
         glm_mat4_identity(model);
@@ -112,8 +136,12 @@ void cg_mantaray_boids_draw(Mantaray* m, Fish* fish, Boids* b, unsigned int shad
 
 void cg_mantaray_destroy(Mantaray* m) {
     cg_model_destroy(&m->body);
-    cg_model_destroy(&m->leftHand);
-    cg_model_destroy(&m->rightHand);
+
+    cg_model_destroy(&m->leftHandOne);
+    cg_model_destroy(&m->rightHandOne);
+
+    cg_model_destroy(&m->leftHandTwo);
+    cg_model_destroy(&m->rightHandTwo);
 
     glDeleteBuffers(3, &m->bufferBody); // body is the start of buffer of length 3
 }

@@ -63,7 +63,7 @@ void cg_boids_rule1(Boids* b, size_t j, vec3 v) {
 // Boids try to keep a small distance away from other objects (including boids)
 // Seperation
 void cg_boids_rule2(Boids* b, size_t j, vec3 v) {
-    float perception = 10.0f;
+    float perception = 15.0f;
     vec3 steering = {0.0f, 0.0f, 0.0f};
     size_t total = 0;
     for (size_t i = 0 ; i < b->size; i++) {
@@ -132,7 +132,7 @@ void cg_boids_rule3(Boids* b, size_t j , vec3 v) {
 }
 
 void cg_boid_position_edge(Boid* b) {
-    int distance = 50;
+    int distance = 45;
 
     // X-axis limits
     if (b->position[0] > distance) {

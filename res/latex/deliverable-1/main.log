@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024/Arch Linux) (preloaded format=pdflatex 2024.6.2)  8 OCT 2024 13:52
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024/Arch Linux) (preloaded format=pdflatex 2024.6.2)  15 OCT 2024 14:53
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -667,7 +667,14 @@ Package hyperref Info: Option `colorlinks' set `true' on input line 44.
 File: l3backend-pdftex.def 2024-02-20 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count313
 \l__pdf_internal_box=\box73
-) (./main.aux)
+) (./main.aux
+
+LaTeX Warning: Label `fig:environment' multiply defined.
+
+
+LaTeX Warning: Label `fig:environment' multiply defined.
+
+)
 \openout1 = `main.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 46.
@@ -778,53 +785,75 @@ File: ts1phv.fd 2020/03/25 scalable font definitions for TS1/phv.
 )
 LaTeX Font Info:    Font shape `TS1/phv/m/n' will be
 (Font)              scaled to size 9.49997pt on input line 79.
-<images/mantaray-sketch.jpg, id=24, 2845.63126pt x 1431.3475pt>
-File: images/mantaray-sketch.jpg Graphic file (type jpg)
-<use images/mantaray-sketch.jpg>
-Package pdftex.def Info: images/mantaray-sketch.jpg  used on input line 107.
-(pdftex.def)             Requested size: 284.57979pt x 143.14313pt.
-<images/sketch.jpg, id=25, 3755.02875pt x 2168.1pt>
+<images/fish-sketch.jpg, id=24, 2888.7925pt x 899.36pt>
+File: images/fish-sketch.jpg Graphic file (type jpg)
+<use images/fish-sketch.jpg>
+Package pdftex.def Info: images/fish-sketch.jpg  used on input line 113.
+(pdftex.def)             Requested size: 144.44809pt x 44.97063pt.
+<images/sketch.jpg, id=25, 2924.9275pt x 2488.29625pt>
 File: images/sketch.jpg Graphic file (type jpg)
 <use images/sketch.jpg>
-Package pdftex.def Info: images/sketch.jpg  used on input line 114.
-(pdftex.def)             Requested size: 375.52487pt x 216.8227pt.
+Package pdftex.def Info: images/sketch.jpg  used on input line 120.
+(pdftex.def)             Requested size: 292.50989pt x 248.84421pt.
 
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+<images/scene.png, id=26, 1068.3915pt x 656.4525pt>
+File: images/scene.png Graphic file (type png)
+<use images/scene.png>
+Package pdftex.def Info: images/scene.png  used on input line 127.
+(pdftex.def)             Requested size: 133.5486pt x 82.05635pt.
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+<images/skybox.png, id=27, 1023.825pt x 600.44325pt>
+File: images/skybox.png Graphic file (type png)
+<use images/skybox.png>
+Package pdftex.def Info: images/skybox.png  used on input line 134.
+(pdftex.def)             Requested size: 102.38849pt x 60.04784pt.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf-dist/fon
 ts/enc/dvips/base/8r.enc}
 
- <./images/mantaray-sketch.jpg>]
+ <./images/fish-sketch.jpg>]
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <10> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 137.
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 156.
 LaTeX Font Info:    Font shape `T1/phv/m/sl' will be
-(Font)              scaled to size 9.49997pt on input line 137.
- [2 <./images/sketch.jpg>] 
+(Font)              scaled to size 9.49997pt on input line 156.
+ [2 <./images/sketch.jpg> <./images/scene.png (PNG copy)> <./images/skybox.png 
+(PNG copy)>]
+
 enddocument/afterlastpage: lastpage setting LastPage.
 (./main.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
  ***********
+
+
+LaTeX Warning: There were multiply-defined labels.
+
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: F18BAB9CD9EB4EA5F92EF0F23F1899A5;1006.
+(rerunfilecheck)             Checksum: 396AD65DDCFAEF5B96DE32FBD9268DF3;1134.
  ) 
 Here is how much of TeX's memory you used:
- 22515 strings out of 474963
- 408997 string characters out of 5774096
- 1944187 words of memory out of 5000000
- 44409 multiletter control sequences out of 15000+600000
+ 22531 strings out of 474963
+ 409312 string characters out of 5774096
+ 1948187 words of memory out of 5000000
+ 44423 multiletter control sequences out of 15000+600000
  578840 words of font info for 51 fonts, out of 8000000 for 9000
  725 hyphenation exceptions out of 8191
  101i,11n,107p,541b,460s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/share/texmf-
 dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/share/texmf-dist/fonts/type1/urw
 /helvetic/uhvro8a.pfb>
-Output written on main.pdf (2 pages, 671828 bytes).
+Output written on main.pdf (2 pages, 1243508 bytes).
 PDF statistics:
- 63 PDF objects out of 1000 (max. 8388607)
- 50 compressed objects within 1 object stream
- 10 named destinations out of 1000 (max. 500000)
- 55 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 67 PDF objects out of 1000 (max. 8388607)
+ 52 compressed objects within 1 object stream
+ 12 named destinations out of 1000 (max. 500000)
+ 65 words of extra memory for PDF output out of 10000 (max. 10000000)
 

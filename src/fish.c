@@ -26,7 +26,6 @@ void cg_fish_model_draw(Fish* f, Boid* b, unsigned int shaderId) {
     cg_shader_uniform_matrix4fv(shaderId, "model", model);
 
     cg_model_draw(&f->body, shaderId);
-
     cg_model_draw(&f->tail, shaderId);
 }
 
@@ -37,6 +36,8 @@ void cg_fish_models_instance_draw(Fish* fish, unsigned int shaderId, Boids* boid
     vec3 forward = {1.0f, 0.0f, 0.0f};  // The fish model faces positive x axis
     mat4 rotation;
     size_t j = 0;
+
+    float degrees = 2.0f;
     for (size_t i = 1; i < boids->size; i+=2, j++) {
         glm_mat4_identity(modelBody[j]);
         glm_translate(modelBody[j], boids->boid[i].position);
@@ -44,12 +45,12 @@ void cg_fish_models_instance_draw(Fish* fish, unsigned int shaderId, Boids* boid
         cg_boid_angle_update(&boids->boid[i], rotation, forward);
         glm_mat4_mul(modelBody[j], rotation, modelBody[j]);
 
+        float time = glfwGetTime();
+        float angle = degrees * sin(time + boids->boid[i].time);
 
         glm_mat4_identity(modelTail[j]);
-        glm_translate(modelTail[j], boids->boid[i].position);
-
-        cg_boid_angle_update(&boids->boid[i], rotation, forward);
-        glm_mat4_mul(modelTail[j], rotation, modelTail[j]);
+        glm_mat4_mul(modelBody[j], modelTail[j], modelTail[j]);
+        glm_rotate(modelTail[j], glm_rad(angle), (vec3) {0.0f, 1.0f, 0.0f});
     }
 
     glBindBuffer(GL_ARRAY_BUFFER, fish->bufferBody);
@@ -68,16 +69,4 @@ void cg_fish_destroy(Fish* f) {
     cg_model_destroy(&f->tail);
 
     glDeleteBuffers(2, &f->bufferBody); // body is the start of buffer of length 2
-}
-
-void cg_starfish_positions(mat4* models, size_t size) {
-    float radius = 5.0f;
-    for (size_t i = 0; i < size; i++) {
-        mat4 model;
-        glm_mat4_identity(model);
-        glm_mat4_scale(model, 20);
-        vec3 position = { ( (rand() % 100) - 50.0f) / 20, (-52.0f) / 20, ( (rand() % 100) - 50.0f ) / 20};
-        glm_translate(model, position);
-        glm_mat4_copy(model, models[i]);
-    }
 }

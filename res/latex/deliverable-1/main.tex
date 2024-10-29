@@ -63,7 +63,7 @@ I understand that by returning this declaration with my work, I am agreeing with
 %OPTIONAL: INSERT A TITLE BY UN-COMMENTING THE NEXT LINE
 %\Large\textbf{Project Proposal and Design Document} \normalsize
 
-%15/10/2022: Deliverable 1 - Project Proposal and Design Document (5 Marks)
+%15/10/2024: Deliverable 1 - Project Proposal and Design Document (5 Marks)
 %    Submit a written proposal (1-2 pages) outlining your intended underwater ecosystem
 %    Describe key features you plan to implement (types of marine life, lighting effects, unique interactions)
 %    Mention any advanced or custom features that you are considering
@@ -76,36 +76,42 @@ And the theme is called "Dynamic Underwater Ecosystem Simulation". It is importa
 
 \subsection{Advanced/Custom features I am considering}
 \begin{itemize}
-    \item Boids (for simulating marine life)
+    \item Boids (for simulating marine life, e.g. manta rays, small fish)
     \item Fog (for water)
-    \item Sky box
+    \item Moving sky box (deep in the ocean theme)
     \item Fluid animation using lerp (linear interpolating between positions)
-    \item Using Quaternion for rotations to avoid gimble lock
+    \item Using Quaternion for rotations of marine life to avoid Gimble lock
     \item Instancing draw calls
+    \item Fragment Discarding (e.g. for transparent png's like seaweed)
+    \item Two cameras, with seamless changing capability
+    \item Randomised Terrain/marine life elements
+    \item Post Processing (gaussian blur) 
+    \item Reflecting/Refracting Ocean 
 \end{itemize}
 
 One feature that I am considering for my project is intelligent character behavior. Specifically I am considering Boids \cite{boids} by Craig Reynolds, for my interaction 
-between my manta rays and small fish. I think this advanced feature is important to make an interesting simulation. I am also considering Boids for my crabs and starfish,
-where the starfish are obstacles for the crabs, which would make for interesting simulation of walking. 
-For water effects, I want to implement a blue fog, simulating water of an ocean. I think adding a skybox would make the scene more realistic as well. I will also use quaternions for rotating my marine life,
+between my manta rays and small fish. I think this advanced feature is important to make an interesting simulation. For water effects, I want to implement a blue fog, simulating water of an ocean. 
+I think adding a sky box would make the scene more realistic as well. It will be underwater, and will move slightly emulating the moving water.  I will also use quaternions for rotating my marine life,
 before they hit each other, to make it realistic. I will use lerp to linearly interpolate between the point of rotation and the previous point to add fluidity to the movement. My final advanced feature would
-be to instance drawing multiple of the same models, so that we can optimize and reduce the amount of draw calls required to draw my marine life. Specifically I will instance my marine life like manta rays.
+be to instance drawing multiple of the same models, so that we can optimize and reduce the amount of draw calls required to draw my marine life. Specifically I will instance draw my marine life, which will include
+starfish, manta rays, and small fish. The fragment discarding I will do will be used for the seaweed which I plan on having, something like two png's side by side, the way Minecraft uses it with grass in game. I will
+have two cameras, with capabilities of moving throughout the scene and seamless switching between cameras. One camera will be positioned initially on top, and one at the centre of the scene. I will also randomise
+where the seaweed, starfish, marine life will initially spawn in to give some interesting and different interactions every time I start my application. I intend to have post processing, specifically a Gaussian blur using
+a 3x3 kernel to better emulate what it would feel like to be underwater. The refracting of the ocean, will be based on the cube which is in a sense a slice of the ocean reflecting/refracting the water themed sky box.
 
 \subsection{Outlining my types of marine life}
 \begin{itemize}
     \item Manta Ray
     \item Small Fish
     \item Starfish
-    \item Crab
 \end{itemize}
-Specifically, I'm thinking of adding hierarchical animation for my small fish and my crabs. Although I may decide to have another underwater createure, because animating 10 legs on a crab
-might be more hassle than its worth. I think a manta ray flapping animation based on hierarchical structure could work well. What I mean by this is splitting the left and right side of the 
-fins of the mantaray and using hierarchical structure moving each section of the fin. The sketch below hopefully describes what I mean
+Specifically, I'm thinking of adding hierarchical animation for my small fish. I can hierarchically move the fin of my fish with the body. The sketch below gives a visual explanation where I cut the model into two parts
+for animating.
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[scale=0.1]{images/mantaray-sketch.jpg}
-    \caption{Sketch of the manta ray hierarchical structure}
+    \includegraphics[scale=0.05]{images/fish-sketch.jpg}
+    \caption{Sketch of the small fish hierarchical structure}
     \label{fig:mantaray-sketch}
 \end{figure}
 
@@ -116,19 +122,32 @@ fins of the mantaray and using hierarchical structure moving each section of the
     \label{fig:environment}
 \end{figure}
 
+\begin{figure}[h!]
+    \centering
+    \includegraphics[scale=0.125]{images/scene.png}
+    \caption{Scene of the environment}
+    \label{fig:environment}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[scale=0.1]{images/skybox.png}
+    \caption{Moving water themed sky box}
+    \label{fig:environment}
+\end{figure}
+
 \newpage
 
-\subsection{Outlining my types of non marine life}
+\subsection{Outlining my types of non marine life (in scope of project)}
 \begin{itemize}
-    \item Coconut + Coconut tree
     \item Underwater seaweed (potentially bioluminescent)
-    \item grass
-    \item sand
+    \item Water bounding box (ocean)
 \end{itemize}
 
-I want my non marine life to complement my theme, and project. I want some patch of land on my ocean, so that I can demonstrate alpha blending of transparent grass. My underwater seaweed
-will be bioluminescent, meaning it will cast a light on my marine life. The light will be a Phong illumination light, with point lights in the seaweed, and a general direction light above
-my landscape as the direction of a sun/daylight. I want a coconut on my patch of sand as well to add some personality to the environment.
+I want my non marine life to complement my theme, and project. I want some patch of land on my ocean, so that I can demonstrate fragment discarding to have transparent grass. My underwater seaweed
+will be glow, meaning it will cast a light on the ocean floor. I will have invisible point lights scattered through the scene to add more interesting light interaction with my marine life. 
+The light will be a Phong illumination light, with point lights in the seaweed, and a general direction light from the top to bottom of my scenery. The water bounding box as mentioned is a bounding box
+of the scenery which will refract the themed skybox, but also be a barrier preventing the fish from swimming away from the barrier.
 
 % feel free to use bibtex
 \begin{thebibliography}{9}

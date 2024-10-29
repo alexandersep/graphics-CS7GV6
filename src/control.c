@@ -6,16 +6,19 @@ static void error_callback(int error, const char* description) {
 
 static void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
+    glfwSetWindowPos(window, width, height);
 }
 
 static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    Camera** camera = glfwGetWindowUserPointer(window);
-    camera[0]->zoom -= yoffset;
-    if (camera[0]->zoom < 1.0f) {
-        camera[0]->zoom = 1.0f;
+    Cameras* cameras = glfwGetWindowUserPointer(window);
+    Camera* camera = &cameras->camera[cameras->focus];
+
+    camera->zoom -= yoffset;
+    if (camera->zoom < 1.0f) {
+        camera->zoom = 1.0f;
     }
-    if (camera[0]->zoom > 45.0f) {
-        camera[0]->zoom = 45.0f;
+    if (camera->zoom > 45.0f) {
+        camera->zoom = 45.0f;
     }
 }
 
