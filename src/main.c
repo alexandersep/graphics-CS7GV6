@@ -11,12 +11,15 @@ typedef struct {
 
 int main() {
     srand(time(NULL));
-    Camera camera[2]; // top down, and movable
-    vec3 firstPersonPos = {0.0f, 0.0f, 3.0f};
-    cg_control_camera_create(&camera[0], 10.0f, firstPersonPos);
+    Camera camera[2]; // Two cameras
+    {
+        vec3 cameraOne = {0.0f, 0.0f, 3.0f}; // In ocean
+        cg_control_camera_create(&camera[0], 10.0f, cameraOne);
 
-    vec3 topDownPos = {0.0f, 90.0f, 0.0f};
-    cg_control_camera_create(&camera[1], 10.0f, topDownPos);
+        vec3 cameraTwo = {0.0f, 90.0f, 0.0f}; // outside ocean
+        cg_control_camera_create(&camera[1], 10.0f, cameraTwo);
+    }
+
     camera[1].angle.pitch = -89.0f;
 
     GLFWwindow* window = cg_control_window_create(CG_SCREEN_X, CG_SCREEN_Y, "Window");
@@ -151,7 +154,7 @@ int main() {
                 cg_shader_uniform_matrix4fv(shaderId, "view", view);
 
                 cg_shader_uniform3f(shaderId, "dirLight.direction", -0.2f, -1.0f, -0.3f);
-                cg_shader_uniform3f(shaderId, "dirLight.ambient", 0.25f, 0.25f, 0.25f);
+                cg_shader_uniform3f(shaderId, "dirLight.ambient", 0.15f, 0.15f, 0.15f);
                 cg_shader_uniform3f(shaderId, "dirLight.diffuse", 0.4f, 0.4f, 0.4f);
                 cg_shader_uniform3f(shaderId, "dirLight.specular", 0.5f, 0.5f, 0.5f);
                 cg_shader_uniform1f(shaderId, "material.shininess", 32.0f);  // Adjust shininess
@@ -191,7 +194,7 @@ int main() {
                 cg_shader_uniform_matrix4fv(shaderMarines, "view", view);
 
                 cg_shader_uniform3f(shaderMarines, "dirLight.direction", -0.2f, -1.0f, -0.3f);
-                cg_shader_uniform3f(shaderMarines, "dirLight.ambient", 0.25f, 0.25f, 0.25f);
+                cg_shader_uniform3f(shaderMarines, "dirLight.ambient", 0.15f, 0.15f, 0.15f);
                 cg_shader_uniform3f(shaderMarines, "dirLight.diffuse", 0.4f, 0.4f, 0.4f);
                 cg_shader_uniform3f(shaderMarines, "dirLight.specular", 0.5f, 0.5f, 0.5f);
                 cg_shader_uniform1f(shaderMarines, "material.shininess", 32.0f);  // Adjust shininess

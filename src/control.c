@@ -92,35 +92,37 @@ void cg_control_angle_update(EulerAngle* angle, vec3 front, vec3 worldup, vec3 u
     front[0] = cos(glm_rad(angle->yaw)) * cos(glm_rad(angle->pitch));
     front[1] = sin(glm_rad(angle->pitch));
     front[2] = sin(glm_rad(angle->yaw)) * cos(glm_rad(angle->pitch));
-    glm_normalize(front);
+    glm_normalize(front); // normalize front vector
 
-    glm_vec3_cross(front, worldup, right);
-    glm_normalize(right);
+    glm_vec3_cross(front, worldup, right); // cross product between the worlds up and right vector insert into right vector
+    glm_normalize(right); // normalize the result
 
-    glm_vec3_cross(right, front, up);
-    glm_normalize(up);
+    glm_vec3_cross(right, front, up); // cross product between right and front, and that becomes up vector
+    glm_normalize(up); // normalize the result
 }
 
 static void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
-    Cameras* cameras = glfwGetWindowUserPointer(window);
+    Cameras* cameras = glfwGetWindowUserPointer(window); // extract cameras from GLFW
     Camera* camera = &cameras->camera[cameras->focus];
 
     float xpos = xposIn;
     float ypos = yposIn;
-    if (!camera->mouse.focus) {
+    if (!camera->mouse.focus) { // If the camera 1 is enabled
         camera->mouse.xpos = xpos;
         camera->mouse.ypos = ypos;
         camera->mouse.focus = 1;
     }
 
-    float xoffset = xpos - camera->mouse.xpos;
+    // set sensitivity of camera
+    float xoffset = xpos - camera->mouse.xpos; 
     float yoffset = camera->mouse.ypos - ypos;
     camera->mouse.xpos = xpos;
     camera->mouse.ypos = ypos;
 
-    xoffset *= camera->mouse.sensitivity;
+    xoffset *= camera->mouse.sensitivity; 
     yoffset *= camera->mouse.sensitivity;
 
+    // update yaw, pitch. roll is not needed for camera
     camera->angle.yaw += xoffset;
     camera->angle.pitch += yoffset;
 

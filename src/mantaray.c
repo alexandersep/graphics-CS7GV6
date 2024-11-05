@@ -28,25 +28,24 @@ static void cg_mantaray_models_instance_draw(Mantaray* m, unsigned int shaderId,
     mat4 modelRightHandTwo[size];
 
     for (size_t i = 0, j = 0; i < boids->size; i+=2, j++) {
-        glm_mat4_identity(modelBody[j]);
+        glm_mat4_identity(modelBody[j]); // identity matrix
 
-        glm_translate(modelBody[j], boids->boid[i].position);
+        glm_translate(modelBody[j], boids->boid[i].position); // translate boid to specific position
 
-        mat4 rotation;
-        cg_boid_angle_update(&boids->boid[i], rotation, forward);
-        glm_mat4_mul(modelBody[j], rotation, modelBody[j]);
+        mat4 rotation; // rotation matrix
+        cg_boid_angle_update(&boids->boid[i], rotation, forward); // make boid face forward
+        glm_mat4_mul(modelBody[j], rotation, modelBody[j]); // rotation * body to rotate body
         
-        float time = glfwGetTime();
+        float time = glfwGetTime(); // timer to flap the hands of the Manta Ray
         float degrees = 10.0f;
-        float angle = degrees * sin(time + boids->boid[i].time);
+        float angle = degrees * sin(time + boids->boid[i].time); // sin wave to give a constant flapping
 
-        glm_mat4_identity(modelLeftHandOne[j]);
-
-        glm_mat4_mul(modelBody[j], modelLeftHandOne[j], modelLeftHandOne[j]);
+        glm_mat4_identity(modelLeftHandOne[j]); // identity matrix
+        glm_mat4_mul(modelBody[j], modelLeftHandOne[j], modelLeftHandOne[j]); // hierarchical animation (body * left hand 1)
         glm_rotate(modelLeftHandOne[j], glm_rad(angle), (vec3) {0.0f, 0.0f, 1.0f});
 
-        glm_mat4_identity(modelLeftHandTwo[j]);
-        glm_mat4_mul(modelLeftHandOne[j], modelLeftHandTwo[j], modelLeftHandTwo[j]);
+        glm_mat4_identity(modelLeftHandTwo[j]); // identity
+        glm_mat4_mul(modelLeftHandOne[j], modelLeftHandTwo[j], modelLeftHandTwo[j]); // hiearchical animation (left hand 1 * left hand 2)
         glm_rotate(modelLeftHandTwo[j], glm_rad(angle / 10), (vec3) {0.0f, 0.0f, 1.0f});
 
         glm_mat4_identity(modelRightHandOne[j]);

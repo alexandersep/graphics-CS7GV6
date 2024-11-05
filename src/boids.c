@@ -184,7 +184,6 @@ void cg_boid_angle_update(Boid* b, mat4 model, vec3 forward) {
     glm_quat_copy(interpolation, b->orientation);
 }
 
-
 void cg_boids_destroy(Boids* boids) {
     free(boids->boid);
 }
