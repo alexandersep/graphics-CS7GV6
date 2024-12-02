@@ -89,9 +89,6 @@ int main() {
         glm_mat4_copy(model, modelMatrices[i]);
     }
 
-    GenericModel sand;
-    cg_generic_model_create(&sand, "res/models/wfc/sand/sand.obj", modelMatrices, instances);
-
     CubeMap skybox;
     cg_cubemap_create(&skybox);
 
@@ -120,9 +117,9 @@ int main() {
 
     vec3 pointLights[20];
     for (int i = 0; i < 20; i++) {
-        float x = (rand() % 40) - 20;
-        float y = (rand() % 40) - 20;
-        float z = (rand() % 40) - 20;
+        float x = (rand() % 50) - 25;
+        float y = (rand() % 50) - 25;
+        float z = (rand() % 20) - 10;
         glm_vec3_copy((vec3){x, y, z}, pointLights[i]);
     }
 
@@ -217,7 +214,6 @@ int main() {
 
             cg_mantaray_boids_draw(&mantaray, &fish, &boids, shaderMarines);
             cg_generic_model_instance_draw(&starfish, shaderMarines, models, size);
-            cg_generic_model_instance_draw(&sand, shaderInstance, modelMatrices, instances);
 
             cg_shader_use(shaderBlending); 
             {
@@ -324,7 +320,6 @@ int main() {
     cg_model_destroy(&sandFloor);
 
     cg_generic_model_destroy(&starfish);
-    cg_generic_model_destroy(&sand);
 
     cg_fish_destroy(&fish);
     cg_mantaray_destroy(&mantaray);
