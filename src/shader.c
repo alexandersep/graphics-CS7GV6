@@ -83,9 +83,9 @@ void cg_shader_light_pointLights(unsigned int programId, vec3* pointLights, unsi
         snprintf(name, sizeof(name), "pointLights[%d].constant", i);
         cg_shader_uniform1f(programId, name, 1.0f);
         snprintf(name, sizeof(name), "pointLights[%d].linear", i);
-        cg_shader_uniform1f(programId, name, 0.022f);
+        cg_shader_uniform1f(programId, name, 0.7f);
         snprintf(name, sizeof(name), "pointLights[%d].quadratic", i);
-        cg_shader_uniform1f(programId, name, 0.0019f);
+        cg_shader_uniform1f(programId, name, 1.8f);
     }
 }
 

@@ -117,9 +117,9 @@ int main() {
 
     vec3 pointLights[20];
     for (int i = 0; i < 20; i++) {
-        float x = (rand() % 50) - 25;
-        float y = (rand() % 50) - 25;
-        float z = (rand() % 20) - 10;
+        float x = ((float)rand() / RAND_MAX) * 45.0f - 23.5f;
+        float y = ((float)rand() / RAND_MAX) * 20.0f - 10.0f;
+        float z = ((float)rand() / RAND_MAX) * 40.0f - 20.0f;
         glm_vec3_copy((vec3){x, y, z}, pointLights[i]);
     }
 
@@ -196,7 +196,7 @@ int main() {
                 cg_shader_uniform3f(shaderMarines, "dirLight.specular", 0.5f, 0.5f, 0.5f);
                 cg_shader_uniform1f(shaderMarines, "material.shininess", 32.0f);  // Adjust shininess
 
-                cg_shader_light_pointLights(shaderMarines, pointLights, 4);
+                cg_shader_light_pointLights(shaderMarines, pointLights, 20);
 
                 cg_shader_uniform3f(shaderMarines, "spotLight.position", cameras.camera[cameras.focus].pos[0], cameras.camera[cameras.focus].pos[1], cameras.camera[cameras.focus].pos[2]);
                 cg_shader_uniform3f(shaderMarines, "spotLight.direction", cameras.camera[cameras.focus].front[0], cameras.camera[cameras.focus].front[1], cameras.camera[cameras.focus].front[2]);
@@ -241,6 +241,8 @@ int main() {
             //glStencilMask(0x00);
             //glDisable(GL_DEPTH_TEST);
 
+            // Commented out to not display the light blocks as the seemlesness dissapears 
+            /*
             cg_shader_use(shaderLight);
             cg_shader_uniform_matrix4fv(shaderLight, "projection", projection);
             cg_shader_uniform_matrix4fv(shaderLight, "view", view);
@@ -253,6 +255,7 @@ int main() {
                 cg_shader_uniform_matrix4fv(shaderLight, "model", model);
                 cg_model_draw(&grass, shaderLight);
             }
+            */
 
             //glm_mat4_identity(model);
             //glm_scale(model, (vec3) {1.1f, 1.1f, 1.1f});
