@@ -10,7 +10,7 @@ static void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-    Cameras* cameras = glfwGetWindowUserPointer(window);
+    Cameras* cameras = (Cameras*)glfwGetWindowUserPointer(window);
     Camera* camera = &cameras->camera[cameras->focus];
 
     camera->zoom -= yoffset;
@@ -23,7 +23,7 @@ static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) 
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    Cameras* cameras = glfwGetWindowUserPointer(window);
+    Cameras* cameras = (Cameras*)glfwGetWindowUserPointer(window);
 
     static int isPolyMode = 0;
     if (key == GLFW_KEY_P && action == GLFW_RELEASE) {
@@ -54,7 +54,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 }
 
 void cg_control_camera_move(GLFWwindow* window, float deltaTime) {
-    Cameras* cameras = glfwGetWindowUserPointer(window);
+    Cameras* cameras = (Cameras*)glfwGetWindowUserPointer(window);
     Camera* camera = &cameras->camera[cameras->focus];
 
     float velocity = camera->speed * deltaTime;
@@ -102,7 +102,7 @@ void cg_control_angle_update(EulerAngle* angle, vec3 front, vec3 worldup, vec3 u
 }
 
 static void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
-    Cameras* cameras = glfwGetWindowUserPointer(window); // extract cameras from GLFW
+    Cameras* cameras = (Cameras*)glfwGetWindowUserPointer(window); // extract cameras from GLFW
     Camera* camera = &cameras->camera[cameras->focus];
 
     float xpos = xposIn;

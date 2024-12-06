@@ -84,7 +84,7 @@ int main() {
     for (unsigned int i = 0; i < instances; i++) {
         mat4 model;
         glm_mat4_identity(model);
-        glm_translate(model, (vec3) {rand() % 10, rand() % 10, rand() % 10});
+        glm_translate(model, (vec3) {(float) (rand() % 10), (float) (rand() % 10), (float) (rand() % 10)});
 
         glm_mat4_copy(model, modelMatrices[i]);
     }

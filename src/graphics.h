@@ -19,7 +19,7 @@
 #include <string.h>
 
 #define CG_SCREEN_X 1920
-#define CG_SCREEN_Y 1200
+#define CG_SCREEN_Y 1080
 
 // Types
 #define TRUE GL_TRUE

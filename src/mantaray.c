@@ -99,7 +99,7 @@ static void cg_mantaray_models_draw(Mantaray* m, unsigned int shaderId, Boid* b,
     cg_model_draw(&m->body, shaderId);
 
     Model models[] = {m->leftHandOne, m->rightHandOne};
-    int zRotation = 1.0f;
+    float zRotation = 1.0f;
     for (size_t i = 0; i < 2; i++) {
         glm_mat4_identity(model);
         glm_translate(model, b->position);

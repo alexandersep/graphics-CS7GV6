@@ -56,7 +56,7 @@ static int read_file(FILE *in, char **dataptr, size_t *sizeptr) {
                 return READALL_TOOMUCH;
             }
 
-            temp = realloc(data, size);
+            temp = (char*)realloc(data, size);
             if (temp == NULL) {
                 free(data);
                 return READALL_NOMEM;
@@ -76,7 +76,7 @@ static int read_file(FILE *in, char **dataptr, size_t *sizeptr) {
         return READALL_ERROR;
     }
 
-    temp = realloc(data, used + 1);
+    temp = (char *)realloc(data, used + 1);
     if (temp == NULL) {
         free(data);
         return READALL_NOMEM;

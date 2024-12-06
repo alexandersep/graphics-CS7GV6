@@ -18,7 +18,7 @@ static void cg_boid_initialize(Boid* b) {
 }
 
 void cg_boids_create(Boids* boids, size_t size) {
-    boids->boid = malloc(sizeof(Boid) * size);
+    boids->boid = (Boid *)malloc(sizeof(Boid) * size);
     for (int i = 0; i < size; i++) {
         cg_boid_initialize(&boids->boid[i]);
     }

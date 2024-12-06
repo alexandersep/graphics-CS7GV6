@@ -88,7 +88,7 @@ void cg_mesh_texture_bind(Mesh* mesh, unsigned int shaderId) {
         }
 
         char* name = NULL;
-        char* tmp = "material.";
+        char* tmp = (char*)"material.";
         for (char* c = tmp; *c != '\0'; c++) {
             arrput(name, *c);
         }

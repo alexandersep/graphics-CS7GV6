@@ -77,15 +77,15 @@ static void cg_model_process_mesh(Model* model, Mesh* m, aiMesh* mesh, const aiS
     Texture *diffuseMaps = NULL;
     Texture *specularMaps = NULL;
     Texture *normalMaps = NULL;
-    cg_model_load_material_textures(model, &diffuseMaps, material, aiTextureType_DIFFUSE, "diffuse");
+    cg_model_load_material_textures(model, &diffuseMaps, material, aiTextureType_DIFFUSE, (char*)"diffuse");
     for (unsigned int i = 0; i < arrlen(diffuseMaps); i++) {
         arrput(textures, diffuseMaps[i]);
     }
-    cg_model_load_material_textures(model, &specularMaps, material, aiTextureType_SPECULAR, "specular");
+    cg_model_load_material_textures(model, &specularMaps, material, aiTextureType_SPECULAR, (char*)"specular");
     for (unsigned int i = 0; i < arrlen(specularMaps); i++) {
         arrput(textures, specularMaps[i]);
     }
-    cg_model_load_material_textures(model, &normalMaps, material, aiTextureType_HEIGHT, "normal");
+    cg_model_load_material_textures(model, &normalMaps, material, aiTextureType_HEIGHT, (char*)"normal");
     for (unsigned int i = 0; i < arrlen(normalMaps); i++) {
         arrput(textures, normalMaps[i]);
     }
