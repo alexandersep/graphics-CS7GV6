@@ -1,6 +1,18 @@
 # graphics-CS7GV6
 Module CS7GV6 - Comptuer Graphics 
 
+## Features
+* Different camera perspectives
+* Model and Texture loading
+* Sky box
+* Transparent .png textures
+* Boids crowd animation
+    * Slerp using quaternions for animation
+* Instance drawing
+* Gaussian Blur
+![Example 1](images/scene.png)
+![Example 2](images/scene3.png)
+
 ## Building instruction
 * Build glfw, see heading *Building Libraries*
 * Build zig, see heading *Building Libraries*
@@ -30,9 +42,11 @@ Module CS7GV6 - Comptuer Graphics
         1. `cmake --build -j$(nproc)`
         1. `make install`
 
+
 ### External Dependencies
 * For glfw: doxygen 1.11.0
 * Ubuntu: xorg-dev
 * zig: v0.13
 * cmake: ~v3.10 
 * assimp: v5.4.3
+
